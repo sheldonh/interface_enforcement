@@ -38,13 +38,17 @@ class InterfaceEnforcer
   end
 
   def constrained_return_type
-    if method_contract.respond_to?(:include?) and method_contract.include?(:return)
-      method_contract[:return]
+    if method_contract.respond_to?(:include?) and method_contract.include?(:returns)
+      method_contract[:returns]
     end
   end
 
   def constrain_return_value_type
-    @return_value.is_a?(constrained_return_type) or raise ReturnViolation
+    if constrained_return_type.is_a?(Proc)
+      constrained_return_type.call(@return_value) or raise ReturnViolation
+    else
+      @return_value.is_a?(constrained_return_type) or raise ReturnViolation
+    end
   end
 
   def method_contract
