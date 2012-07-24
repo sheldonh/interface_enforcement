@@ -17,16 +17,38 @@ class InterfaceEnforcer
 
   def method_missing(method, *args)
     @method, @args = method, args
-    enforce_method_allowed
-    @return_value = @subject.public_send(@method, *@args)
-    if @contract[@method].respond_to?(:include?) and @contract[@method].include?(:return)
-      @return_value.is_a?(@contract[@method][:return]) or raise ReturnViolation
-    end
+    constrain_method_invocation
+    invoke_method
+    constrain_return_value
     @return_value
   end
 
-  def enforce_method_allowed
-    @contract[@method] or raise MethodViolation
+  def constrain_method_invocation
+    method_contract or raise MethodViolation
+  end
+
+  def invoke_method
+    @return_value = @subject.public_send(@method, *@args)
+  end
+
+  def constrain_return_value
+    if constrained_return_type
+      constrain_return_value_type
+    end
+  end
+
+  def constrained_return_type
+    if method_contract.respond_to?(:include?) and method_contract.include?(:return)
+      method_contract[:return]
+    end
+  end
+
+  def constrain_return_value_type
+    @return_value.is_a?(constrained_return_type) or raise ReturnViolation
+  end
+
+  def method_contract
+    @contract[@method]
   end
 
 end
