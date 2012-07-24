@@ -17,7 +17,7 @@ class InterfaceEnforcer
   def method_missing(method, *args)
     @method, @args = method, args
     enforce_method_allowed
-    @subject.send(@method, *@args)
+    @subject.public_send(@method, *@args)
   end
 
   def enforce_method_allowed
