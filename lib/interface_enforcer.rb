@@ -4,8 +4,45 @@ class InterfaceEnforcer
   class MethodViolation < Violation; end
   class ReturnViolation < Violation; end
 
+  class MethodContract
+
+    def initialize(constraints)
+      if constraints == :allowed
+        @returns = unconstrained_rule
+      else
+        @returns = constraints[:returns]
+      end
+    end
+
+    def valid_return_value?(return_value)
+      return_value_rule.call(return_value)
+    end
+
+    private
+
+    def return_value_rule
+      if @returns.is_a?(Proc)
+        @returns
+      else
+        constrained_return_type_rule
+      end
+    end
+
+    def constrained_return_type_rule
+      ->(o) { o.is_a?(@returns) }
+    end
+
+    def unconstrained_rule
+      ->(o) { true }
+    end
+
+  end
+
   def initialize(contract)
-    @contract = contract
+    @contracts = contract.inject({}) do |memo, (method, constraints)|
+      memo[method] = MethodContract.new(constraints)
+      memo
+    end
   end
 
   def attach(subject)
@@ -24,7 +61,7 @@ class InterfaceEnforcer
   end
 
   def constrain_method_invocation
-    method_contract or raise MethodViolation
+    @contracts.include?(@method) or raise MethodViolation
   end
 
   def invoke_method
@@ -32,33 +69,7 @@ class InterfaceEnforcer
   end
 
   def constrain_return_value
-    if have_return_value_constraint?
-      return_value_constraint_rule.call(@return_value) or raise ReturnViolation
-    end
-  end
-
-  def have_return_value_constraint?
-    method_contract.respond_to?(:include?) and method_contract.include?(:returns)
-  end
-
-  def return_value_constraint_rule
-    if return_value_constraint.is_a?(Proc)
-      return_value_constraint
-    else
-      proc_for_return_value_type_constraint
-    end
-  end
-
-  def proc_for_return_value_type_constraint
-    ->(o) { o.is_a?(return_value_constraint) }
-  end
-
-  def return_value_constraint
-    method_contract[:returns]
-  end
-
-  def method_contract
-    @contract[@method]
+    @contracts[@method].valid_return_value?(@return_value) or raise ReturnViolation
   end
 
 end
