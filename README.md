@@ -1,5 +1,5 @@
-interfaced
-==========
+interface\_enforcer
+===================
 
 This repository proves the concept and value of elective interfaces in Ruby
 tests.
