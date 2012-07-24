@@ -5,6 +5,11 @@ require 'spec_helper'
 #
 class InterfaceEnforcer
 
+  class Violation < RuntimeError; end
+  class ArgumentViolation < Violation; end
+  class ReturnViolation < Violation; end
+  class MethodViolation < Violation; end
+
   def initialize(contract)
     @contract = contract
     @subject = nil
@@ -24,34 +29,28 @@ class InterfaceEnforcer
 
   def run_subject_through_contract
     enforce_contract_args
-    @return_value = @subject.send(@method, *@args)
+    get_return_value_from_subject
     enforce_contract_return
     @return_value
   end
 
   def enforce_contract_args
-    case method_contract[:input]
-    when :no_args
-      raise InterfaceViolation unless @args.empty?
-    end
+    method_contract[:args].call(@args) or raise ArgumentViolation
+  end
+
+  def get_return_value_from_subject
+    @return_value = @subject.send(@method, *@args)
   end
 
   def enforce_contract_return
-    case method_contract[:output]
-    when :string
-      raise InterfaceViolation unless @return_value.is_a?(String)
-    when :numeric
-      raise InterfaceViolation unless @return_value.is_a?(Numeric)
-    end
+    method_contract[:return].call(@return_value) or raise ReturnViolation
   end
 
   def method_contract
-    @contract[@method] or raise InterfaceViolation
+    @contract[@method] or raise MethodViolation
   end
 
 end
-
-class InterfaceViolation < RuntimeError; end
 
 # From here on, it's your own code.
 #
@@ -74,14 +73,19 @@ class Publisher
   end
 
   def gets
-    @message
+    @message.chomp << "\n"
   end
 
 end
 
 module PublisherInterface
 
-  CONTRACT = { :gets => { :input => :no_args, :output => :string } }
+  CONTRACT = {
+    :gets => {
+      :args => ->(a) { a.empty? },
+      :return => ->(o) { o.is_a?(String) and o.end_with?("\n") },
+    }
+  }
 
   def self.attach(subject)
     InterfaceEnforcer.new(CONTRACT).attach(subject)
@@ -93,17 +97,23 @@ describe Publisher do
 
   it "prints messages" do
     publisher = PublisherInterface.attach(Publisher.new("the message"))
-    publisher.gets.should eq("the message")
+    publisher.gets.should eq("the message\n")
   end
 
 end
 
 describe Subscriber do
 
-  it "reads messages from its publisher" do
+  it "this example passes by mistake, because the test double does not behave like a Publisher" do
+    publisher = double(Publisher, :gets => "a message", :test => true)
+    subscriber = Subscriber.new(publisher)
+    subscriber.gets.should eq("a message")
+  end
+
+  it "this example fails correctly, because Publisher#gets returns a line-terminated string" do
     publisher = PublisherInterface.attach(double(Publisher, :gets => "a message", :test => true))
     subscriber = Subscriber.new(publisher)
-    subscriber.gets.should == "a message"
+    subscriber.gets.should eq("a message")
   end
 
 end
