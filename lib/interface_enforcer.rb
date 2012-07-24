@@ -32,23 +32,29 @@ class InterfaceEnforcer
   end
 
   def constrain_return_value
-    if constrained_return_type
-      constrain_return_value_type
+    if have_return_value_constraint?
+      return_value_constraint_rule.call(@return_value) or raise ReturnViolation
     end
   end
 
-  def constrained_return_type
-    if method_contract.respond_to?(:include?) and method_contract.include?(:returns)
-      method_contract[:returns]
-    end
+  def have_return_value_constraint?
+    method_contract.respond_to?(:include?) and method_contract.include?(:returns)
   end
 
-  def constrain_return_value_type
-    if constrained_return_type.is_a?(Proc)
-      constrained_return_type.call(@return_value) or raise ReturnViolation
+  def return_value_constraint_rule
+    if return_value_constraint.is_a?(Proc)
+      return_value_constraint
     else
-      @return_value.is_a?(constrained_return_type) or raise ReturnViolation
+      proc_for_return_value_type_constraint
     end
+  end
+
+  def proc_for_return_value_type_constraint
+    ->(o) { o.is_a?(return_value_constraint) }
+  end
+
+  def return_value_constraint
+    method_contract[:returns]
   end
 
   def method_contract
