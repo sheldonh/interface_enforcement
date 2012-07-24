@@ -6,7 +6,7 @@ describe InterfaceEnforcer do
 
   let(:real_subject) {
     class Subject
-      def ask; @knowledge; end
+      def ask; @knowledge || "the default"; end
       def tell(something); @knowledge = something; end
       private; def private_method; "a secret"; end
     end
@@ -15,8 +15,8 @@ describe InterfaceEnforcer do
 
   it "contracted methods are delegated to the subject" do
     subject = InterfaceEnforcer.new(:ask => :allowed, :tell => :allowed).attach(real_subject)
-    subject.tell("the knowledge")
-    subject.ask.should eq("the knowledge")
+    subject.tell("new knowledge")
+    subject.ask.should eq("new knowledge")
   end
 
   it "contracted methods honour subject privacy" do
@@ -27,6 +27,17 @@ describe InterfaceEnforcer do
   it "uncontracted methods raise a method violation" do
     subject = InterfaceEnforcer.new(:demand => :allowed).attach(real_subject)
     expect { subject.ask }.to raise_error(InterfaceEnforcer::MethodViolation)
+  end
+
+
+  it "contracted return value types are allowed" do
+    subject = InterfaceEnforcer.new(:ask => { :return => String }).attach(real_subject)
+    subject.ask.should eq("the default")
+  end
+
+  it "uncontracted return value types raise a return violation" do
+    subject = InterfaceEnforcer.new(:ask => { :return => Numeric }).attach(real_subject)
+    expect { subject.ask }.to raise_error(InterfaceEnforcer::ReturnViolation)
   end
 
 end
