@@ -1,8 +1,8 @@
 interface\_enforcer
 ===================
 
-This repository proves the concept and value of elective interfaces in Ruby
-tests.
+This repository proves the concept and value of elective test interfaces for
+Ruby.
 
 The file spec/subscriber\_spec.rb demonstrates the risk present in isolated
 testing in a loosely typed language.
