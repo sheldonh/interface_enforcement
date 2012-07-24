@@ -1,54 +1,9 @@
 require 'spec_helper'
-require 'ostruct'
 
-class Subscriber
-
-  def initialize(publisher)
-    @publisher = publisher
-  end
-
-  def gets
-    @publisher.gets
-  end
-
-end
-
-class Publisher
-
-  def initialize(message)
-    @message = message
-  end
-
-  def gets
-    @message
-  end
-
-end
-
-class OriginalPublisherInterfaceProxy
-
-  def initialize(publisher)
-    @publisher = publisher
-  end
-
-  def gets(*args)
-    raise InterfaceViolation unless args.empty?
-    @publisher.gets(*args).tap { |returns| raise InterfaceViolation unless returns.is_a?(String) or returns.nil? }
-  end
-
-end
-
-module PublisherInterfaceProxy
-
-  CONTRACT = { :gets => { :input => :no_args, :output => :string } }
-
-  def self.attach(subject)
-    InterfaceProxy.new(CONTRACT).attach(subject)
-  end
-
-end
-
-class InterfaceProxy
+# This would be provided by the library; you don't define or modify this in
+# your own code.
+#
+class InterfaceEnforcer
 
   def initialize(contract)
     @contract = contract
@@ -75,14 +30,14 @@ class InterfaceProxy
   end
 
   def enforce_contract_args
-    case @contract[@method][:input]
+    case method_contract[:input]
     when :no_args
       raise InterfaceViolation unless @args.empty?
     end
   end
 
   def enforce_contract_return
-    case @contract[@method][:output]
+    case method_contract[:output]
     when :string
       raise InterfaceViolation unless @return_value.is_a?(String)
     when :numeric
@@ -90,30 +45,46 @@ class InterfaceProxy
     end
   end
 
-end
-
-class InterfaceProxyFactory
-
-  def initialize
-    @spec = { :gets => { :input => :no_args, :output => :string } }
-  end
-
-  def proxy
-    @spec.each do |method, contract|
-
-    end
+  def method_contract
+    @contract[@method] or raise InterfaceViolation
   end
 
 end
 
 class InterfaceViolation < RuntimeError; end
 
-describe Subscriber do
+# From here on, it's your own code.
+#
+class Subscriber
 
-  it "reads messages from its publisher" do
-    publisher = PublisherInterfaceProxy.attach(OpenStruct.new(:gets => "a message"))
-    subscriber = Subscriber.new(publisher)
-    subscriber.gets.should == "a message"
+  def initialize(publisher)
+    @publisher = publisher
+  end
+
+  def gets
+    @publisher.gets
+  end
+
+end
+
+class Publisher
+
+  def initialize(message)
+    @message = message
+  end
+
+  def gets
+    @message
+  end
+
+end
+
+module PublisherInterface
+
+  CONTRACT = { :gets => { :input => :no_args, :output => :string } }
+
+  def self.attach(subject)
+    InterfaceEnforcer.new(CONTRACT).attach(subject)
   end
 
 end
@@ -121,8 +92,18 @@ end
 describe Publisher do
 
   it "prints messages" do
-    publisher = PublisherInterfaceProxy.attach(Publisher.new("the message"))
+    publisher = PublisherInterface.attach(Publisher.new("the message"))
     publisher.gets.should eq("the message")
+  end
+
+end
+
+describe Subscriber do
+
+  it "reads messages from its publisher" do
+    publisher = PublisherInterface.attach(double(Publisher, :gets => "a message", :test => true))
+    subscriber = Subscriber.new(publisher)
+    subscriber.gets.should == "a message"
   end
 
 end
