@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 # This would be provided by the library; you don't define or modify this in
 # your own code.
 #
@@ -95,7 +93,7 @@ end
 
 describe Publisher do
 
-  it "prints messages" do
+  it "this example forces us to change the PublisherInterface when the Publisher changes" do
     publisher = PublisherInterface.attach(Publisher.new("the message"))
     publisher.gets.should eq("the message\n")
   end

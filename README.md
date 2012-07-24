@@ -4,7 +4,7 @@ interface\_enforcer
 This repository proves the concept and value of elective test interfaces for
 Ruby.
 
-The file spec/subscriber\_spec.rb demonstrates the risk present in isolated
+The file demo/subscriber\_spec.rb demonstrates the risk present in isolated
 testing in a loosely typed language.
 
 The tests for the Subscriber use a test double for the Publisher. However, the
