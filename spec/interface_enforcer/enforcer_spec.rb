@@ -6,6 +6,7 @@ describe TestInterface::Enforcer do
     class Subject
       def ask; @knowledge || "the default"; end
       def tell(something); @knowledge = something; end
+      def ignore(this, that); end
       private; def private_method; "a secret"; end
     end
     Subject.new
@@ -31,7 +32,17 @@ describe TestInterface::Enforcer do
 
   end
 
-  describe "return values from the subject" do
+  describe "return values from the subject's methods" do
+
+    it "are allowed if uncontracted" do
+      subject = TestInterface::Enforcer.new(ask: { :args => :any }).wrap(real_subject)
+      subject.ask.should eq("the default")
+    end
+
+    it "are allowed if unconstrained" do
+      subject = TestInterface::Enforcer.new(ask: { :returns => :any }).wrap(real_subject)
+      subject.ask.should eq("the default")
+    end
 
     it "are allowed if of a contracted type" do
       subject = TestInterface::Enforcer.new(ask: { returns: String }).wrap(real_subject)
@@ -51,6 +62,41 @@ describe TestInterface::Enforcer do
     it "raise a TestInterface::ReturnViolation if the contracted rule is false for them" do
       subject = TestInterface::Enforcer.new(ask: { returns: ->(o) { o.include?('impossible') } }).wrap(real_subject)
       expect { subject.ask }.to raise_error(TestInterface::ReturnViolation)
+    end
+
+  end
+
+  describe "arguments to the subject's methods" do
+
+    it "are allowed if uncontracted" do
+      subject = TestInterface::Enforcer.new(tell: { :returns => Object }).wrap(real_subject)
+      expect { subject.tell("new knowledge") }.to_not raise_error
+    end
+
+    it "are allowed if unconstrainted" do
+      subject = TestInterface::Enforcer.new(tell: { :args => :any }).wrap(real_subject)
+       subject.tell("new knowledge") 
+      expect { subject.tell("new knowledge") }.to_not raise_error
+    end
+
+    it "are allowed if of a contracted type" do
+      subject = TestInterface::Enforcer.new(:tell => { args: String }).wrap(real_subject)
+      expect { subject.tell("new knowledge") }.to_not raise_error
+    end
+
+    it "raise a TestInterface::ArgumentViolation if of uncontracted type" do
+      subject = TestInterface::Enforcer.new(:tell => { args: Numeric }).wrap(real_subject)
+      expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentViolation
+    end
+
+    it "are allowed if each is of the contracted type" do
+      subject = TestInterface::Enforcer.new(:ignore => { args: [ String, :any ] }).wrap(real_subject)
+      expect { subject.ignore("wrong", "types") }.to_not raise_error
+    end
+
+    it "raise a TestInterface::ArgumentViolation if not all of the contracted types" do
+      subject = TestInterface::Enforcer.new(:ignore => { args: [ :any, Numeric ] }).wrap(real_subject)
+      expect { subject.ignore("wrong", "types") }.to raise_error TestInterface::ArgumentViolation
     end
 
   end

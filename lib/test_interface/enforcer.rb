@@ -21,11 +21,16 @@ module TestInterface
     def method_missing(method, *args)
       @method, @args = method, args
       constrain_method_invocation
+      constrain_args
       invoke_method.tap { constrain_return_value }
     end
 
     def constrain_method_invocation
       @contracts.include?(@method) or raise MethodViolation
+    end
+
+    def constrain_args
+      @contracts[@method].valid_args?(@args) or raise ArgumentViolation
     end
 
     def invoke_method

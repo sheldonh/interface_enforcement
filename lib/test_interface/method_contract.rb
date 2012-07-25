@@ -5,33 +5,48 @@ module TestInterface
     class MethodContract
 
       def initialize(constraints)
-        if constraints == :allowed
-          @returns = unconstrained_rule
-        else
-          @returns = constraints[:returns]
+        unless constraints == :allowed
+          set_args_rules(constraints[:args])
+          set_return_value_rule(constraints[:returns])
+        end
+      end
+
+      def valid_args?(args)
+        return true unless @args_rules
+        args.each_with_index do |o, i|
+          @args_rules[i].call(o) or break false
         end
       end
 
       def valid_return_value?(return_value)
-        return_value_rule.call(return_value)
+        return true unless @return_value_rule
+        @return_value_rule.call(return_value)
       end
 
       private
 
-      def return_value_rule
-        if @returns.is_a?(Proc)
-          @returns
-        else
-          constrained_return_type_rule
+      def set_args_rules(constraints)
+        if constraints.is_a?(Module)
+          @args_rules = args_rules [ constraints ]
+        elsif constraints.is_a?(Enumerable)
+          @args_rules = args_rules constraints
         end
       end
 
-      def constrained_return_type_rule
-        ->(o) { o.is_a?(@returns) }
+      def args_rules(constraints)
+        constraints.map { |c| type_constrained_rule(c) }
       end
 
-      def unconstrained_rule
-        ->(o) { true }
+      def set_return_value_rule(constraint)
+        if constraint.is_a?(Proc)
+          @return_value_rule = constraint
+        elsif constraint.is_a?(Module)
+          @return_value_rule = type_constrained_rule(constraint)
+        end
+      end
+
+      def type_constrained_rule(constraint)
+        ->(o) { constraint == :any or o.is_a?(constraint) }
       end
 
     end
