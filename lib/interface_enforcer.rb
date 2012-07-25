@@ -45,7 +45,7 @@ class InterfaceEnforcer
     end
   end
 
-  def attach(subject)
+  def wrap(subject)
     @subject = subject
     self
   end

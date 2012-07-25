@@ -13,7 +13,7 @@ class InterfaceEnforcer
     @subject = nil
   end
 
-  def attach(subject)
+  def wrap(subject)
     @subject = subject
     self
   end
@@ -81,12 +81,12 @@ module PublisherInterface
   CONTRACT = {
     :gets => {
       :args => ->(a) { a.empty? },
-      :return => ->(o) { o.is_a?(String) and o.end_with?("\n") },
+      :return => ->(o) { o.respond_to?(:to_s) and o.to_s.end_with?("\n") },
     }
   }
 
-  def self.attach(subject)
-    InterfaceEnforcer.new(CONTRACT).attach(subject)
+  def self.wrap(subject)
+    InterfaceEnforcer.new(CONTRACT).wrap(subject)
   end
 
 end
@@ -94,7 +94,7 @@ end
 describe Publisher do
 
   it "this example forces us to change the PublisherInterface when the Publisher changes" do
-    publisher = PublisherInterface.attach(Publisher.new("the message"))
+    publisher = PublisherInterface.wrap(Publisher.new("the message"))
     publisher.gets.should eq("the message\n")
   end
 
@@ -109,7 +109,7 @@ describe Subscriber do
   end
 
   it "this example fails correctly, because Publisher#gets returns a line-terminated string" do
-    publisher = PublisherInterface.attach(double(Publisher, :gets => "a message", :test => true))
+    publisher = PublisherInterface.wrap(double(Publisher, :gets => "a message", :test => true))
     subscriber = Subscriber.new(publisher)
     subscriber.gets.should eq("a message")
   end
