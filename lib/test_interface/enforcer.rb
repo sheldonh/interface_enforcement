@@ -5,9 +5,9 @@ module TestInterface
   class Enforcer
 
     def initialize(contract)
-      @contracts = contract.inject({}) do |memo, (method, constraints)|
-        memo[method] = MethodContract.new(constraints)
-        memo
+      @contracts = {}
+      contract.each do |method, constraints|
+        @contracts[method] = MethodContract.new(constraints)
       end
     end
 
@@ -21,9 +21,7 @@ module TestInterface
     def method_missing(method, *args)
       @method, @args = method, args
       constrain_method_invocation
-      invoke_method
-      constrain_return_value
-      @return_value
+      invoke_method.tap { constrain_return_value }
     end
 
     def constrain_method_invocation
