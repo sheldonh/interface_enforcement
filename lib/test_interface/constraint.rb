@@ -19,6 +19,3 @@ module TestInterface
   end
 
 end
-
-require 'test_interface/return_value_constraint'
-require 'test_interface/args_constraint'

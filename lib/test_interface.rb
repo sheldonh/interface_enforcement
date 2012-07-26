@@ -1,12 +1,7 @@
+require 'test_interface/args_constraint'
+require 'test_interface/args_enumerable_constraint'
+require 'test_interface/args_proc_constraint'
 require 'test_interface/enforcer'
-
-module TestInterface
-
-  class Violation < RuntimeError; end
-  class ArgumentViolation < Violation; end
-  class ArgumentCountViolation < ArgumentViolation; end
-  class ArgumentTypeViolation < ArgumentViolation; end
-  class MethodViolation < Violation; end
-  class ReturnViolation < Violation; end
-
-end
+require 'test_interface/method_contract'
+require 'test_interface/return_value_constraint'
+require 'test_interface/violation'

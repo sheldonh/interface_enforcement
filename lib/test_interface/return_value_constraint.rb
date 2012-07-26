@@ -8,6 +8,10 @@ module TestInterface
 
         include Constraint
 
+        def self.build(specification)
+          new(specification)
+        end
+
         def initialize(definition)
           if definition.is_a?(Proc)
             @rule = definition

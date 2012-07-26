@@ -1,5 +1,3 @@
-require 'test_interface/constraint'
-
 module TestInterface
 
   class Enforcer
@@ -24,11 +22,11 @@ module TestInterface
       private
 
       def set_args_constraint(specification)
-        @args_constraint = ArgsConstraint.new(specification)
+        @args_constraint = ArgsConstraint.build(specification)
       end
 
       def set_return_value_constraint(specification)
-        @return_value_constraint = ReturnValueConstraint.new(specification)
+        @return_value_constraint = ReturnValueConstraint.build(specification)
       end
 
     end

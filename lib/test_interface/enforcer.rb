@@ -1,5 +1,3 @@
-require 'test_interface/method_contract'
-
 module TestInterface
 
   class Enforcer
