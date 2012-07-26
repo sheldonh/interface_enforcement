@@ -84,9 +84,9 @@ describe TestInterface::Enforcer do
       expect { subject.tell("new knowledge") }.to_not raise_error
     end
 
-    it "raise a TestInterface::ArgumentViolation if of uncontracted type" do
+    it "raise a TestInterface::ArgumentTypeViolation if of uncontracted type" do
       subject = TestInterface::Enforcer.new(:tell => { args: Numeric }).wrap(real_subject)
-      expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentViolation
+      expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentTypeViolation
     end
 
     it "are allowed if each is of the contracted type" do
@@ -94,9 +94,19 @@ describe TestInterface::Enforcer do
       expect { subject.ignore("wrong", "types") }.to_not raise_error
     end
 
-    it "raise a TestInterface::ArgumentViolation if not all of the contracted types" do
+    it "raises TestInterface::ArgumentTypeViolation if not all of the contracted types" do
       subject = TestInterface::Enforcer.new(:ignore => { args: [ :any, Numeric ] }).wrap(real_subject)
-      expect { subject.ignore("wrong", "types") }.to raise_error TestInterface::ArgumentViolation
+      expect { subject.ignore("wrong", "types") }.to raise_error TestInterface::ArgumentTypeViolation
+    end
+
+    it "raises TestInterface::ArgumentCountViolation if too numerous" do
+      subject = TestInterface::Enforcer.new(:ignore => { args: Object }).wrap(real_subject)
+      expect { subject.ignore("too", "many arguments") }.to raise_error TestInterface::ArgumentCountViolation
+    end
+
+    it "raises TestInterface::ArgumentCountViolation if too few" do
+      subject = TestInterface::Enforcer.new(:tell => { args: [ String, String ] }).wrap(real_subject)
+      expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
     end
 
   end

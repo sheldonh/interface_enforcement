@@ -30,7 +30,7 @@ module TestInterface
     end
 
     def constrain_args
-      @contracts[@method].valid_args?(@args) or raise ArgumentViolation
+      @contracts[@method].constrain_args(@args)
     end
 
     def invoke_method
@@ -38,7 +38,7 @@ module TestInterface
     end
 
     def constrain_return_value
-      @contracts[@method].valid_return_value?(@return_value) or raise ReturnViolation
+      @contracts[@method].constrain_return_value(@return_value)
     end
 
   end

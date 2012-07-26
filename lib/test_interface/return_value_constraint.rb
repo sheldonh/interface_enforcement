@@ -16,8 +16,8 @@ module TestInterface
           end
         end
 
-        def allows?(return_value)
-          @rule.call(return_value)
+        def constrain(return_value)
+          @rule.call(return_value) or raise ReturnViolation
         end
 
       end

@@ -5,7 +5,7 @@ module TestInterface
   class Enforcer
 
     class MethodContract
-      UNCONSTRAINED_METHOD = {:args => Constraint::UNCONSTRAINED_TYPE, :returns => Constraint::UNCONSTRAINED_TYPE}
+      UNCONSTRAINED_METHOD = {args: Constraint::UNCONSTRAINED_TYPE, returns: Constraint::UNCONSTRAINED_TYPE}
 
       def initialize(specification)
         specification = UNCONSTRAINED_METHOD if specification == :allowed
@@ -13,12 +13,12 @@ module TestInterface
         set_return_value_constraint(specification[:returns])
       end
 
-      def valid_args?(args)
-        @args_constraint.allows?(args)
+      def constrain_args(args)
+        @args_constraint.constrain(args)
       end
 
-      def valid_return_value?(return_value)
-        @return_value_constraint.allows?(return_value)
+      def constrain_return_value(return_value)
+        @return_value_constraint.constrain(return_value)
       end
 
       private
