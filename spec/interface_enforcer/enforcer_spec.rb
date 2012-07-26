@@ -49,7 +49,7 @@ describe TestInterface::Enforcer do
       subject.ask.should eq("the default")
     end
 
-    it "raise a TestInterface::ReturnViolation if of uncontracted type" do
+    it "raise TestInterface::ReturnViolation if of uncontracted type" do
       subject = TestInterface::Enforcer.new(ask: { returns: Numeric }).wrap(real_subject)
       expect { subject.ask }.to raise_error(TestInterface::ReturnViolation)
     end
@@ -59,7 +59,7 @@ describe TestInterface::Enforcer do
       subject.ask.should eq("the default")
     end
 
-    it "raise a TestInterface::ReturnViolation if the contracted rule is false for them" do
+    it "raise TestInterface::ReturnViolation if the contracted rule is false for them" do
       subject = TestInterface::Enforcer.new(ask: { returns: ->(o) { o.include?('impossible') } }).wrap(real_subject)
       expect { subject.ask }.to raise_error(TestInterface::ReturnViolation)
     end
@@ -79,42 +79,52 @@ describe TestInterface::Enforcer do
       expect { subject.tell("new knowledge") }.to_not raise_error
     end
 
-  end
+    describe "type" do
 
-  describe "argument type" do
+      it "is allowed if contracted for one argument" do
+        subject = TestInterface::Enforcer.new(:tell => { args: String }).wrap(real_subject)
+        expect { subject.tell("new knowledge") }.to_not raise_error
+      end
 
-    it "is allowed if contracted for one argument" do
-      subject = TestInterface::Enforcer.new(:tell => { args: String }).wrap(real_subject)
-      expect { subject.tell("new knowledge") }.to_not raise_error
+      it "raises a TestInterface::ArgumentTypeViolation if uncontracted for one argument" do
+        subject = TestInterface::Enforcer.new(:tell => { args: Numeric }).wrap(real_subject)
+        expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentTypeViolation
+      end
+
+      it "is allowed if each one is contracted" do
+        subject = TestInterface::Enforcer.new(:ignore => { args: [ String, :any ] }).wrap(real_subject)
+        expect { subject.ignore("wrong", "types") }.to_not raise_error
+      end
+
+      it "raises TestInterface::ArgumentTypeViolation if not all contracted" do
+        subject = TestInterface::Enforcer.new(:ignore => { args: [ :any, Numeric ] }).wrap(real_subject)
+        expect { subject.ignore("wrong", "types") }.to raise_error TestInterface::ArgumentTypeViolation
+      end
+
     end
 
-    it "raises a TestInterface::ArgumentTypeViolation if uncontracted for one argument" do
-      subject = TestInterface::Enforcer.new(:tell => { args: Numeric }).wrap(real_subject)
-      expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentTypeViolation
+    describe "count" do
+
+      it "raise TestInterface::ArgumentCountViolation if too numerous" do
+        subject = TestInterface::Enforcer.new(:ignore => { args: Object }).wrap(real_subject)
+        expect { subject.ignore("too", "many arguments") }.to raise_error TestInterface::ArgumentCountViolation
+      end
+
+      it "raise TestInterface::ArgumentCountViolation if too few" do
+        subject = TestInterface::Enforcer.new(:tell => { args: [ String, String ] }).wrap(real_subject)
+        expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
+      end
+
     end
 
-    it "is allowed if each one is contracted" do
-      subject = TestInterface::Enforcer.new(:ignore => { args: [ String, :any ] }).wrap(real_subject)
-      expect { subject.ignore("wrong", "types") }.to_not raise_error
-    end
+    describe "rule" do
 
-    it "raise TestInterface::ArgumentTypeViolation if not all contracted" do
-      subject = TestInterface::Enforcer.new(:ignore => { args: [ :any, Numeric ] }).wrap(real_subject)
-      expect { subject.ignore("wrong", "types") }.to raise_error TestInterface::ArgumentTypeViolation
-    end
+      it "is allowed allowed if the contracted rule is true for it" do
+        subject = TestInterface::Enforcer.new(tell: { args: ->(o) { o == "new knowledge" } }, :ask => :allowed).wrap(real_subject)
+        subject.tell("new knowledge")
+        subject.ask.should == "new knowledge"
+      end
 
-  end
-
-  describe "argument count" do
-
-    it "raise TestInterface::ArgumentCountViolation if too numerous" do
-      subject = TestInterface::Enforcer.new(:ignore => { args: Object }).wrap(real_subject)
-      expect { subject.ignore("too", "many arguments") }.to raise_error TestInterface::ArgumentCountViolation
-    end
-
-    it "raise TestInterface::ArgumentCountViolation if too few" do
-      subject = TestInterface::Enforcer.new(:tell => { args: [ String, String ] }).wrap(real_subject)
-      expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
     end
 
   end

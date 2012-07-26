@@ -24,9 +24,13 @@ module TestInterface
         end
 
         def set_constraints(specification)
-          specification = [ specification ] unless specification.is_a?(Enumerable)
-          @rules = specification.map { |c| type_constrained_rule(c) }
-          @constrained_argument_count = specification.size
+          if specification.is_a?(Proc)
+            @single_rule = specification
+          else
+            specification = [ specification ] unless specification.is_a?(Enumerable)
+            @rules = specification.map { |c| type_constrained_rule(c) }
+            @constrained_argument_count = specification.size
+          end
         end
 
         def constrain_argument_count(actual)
@@ -36,7 +40,9 @@ module TestInterface
         end
 
         def constrain_args(args)
-          if @rules
+          if @single_rule
+            @single_rule.call(args)
+          elsif @rules
             args.each_with_index do |o, i|
               @rules[i].call(o) or raise ArgumentTypeViolation
             end
