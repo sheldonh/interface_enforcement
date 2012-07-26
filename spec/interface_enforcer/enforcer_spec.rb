@@ -75,7 +75,7 @@ describe TestInterface::Enforcer do
 
     it "are allowed if unconstrainted" do
       subject = TestInterface::Enforcer.new(tell: { :args => :any }).wrap(real_subject)
-       subject.tell("new knowledge") 
+       subject.tell("new knowledge")
       expect { subject.tell("new knowledge") }.to_not raise_error
     end
 

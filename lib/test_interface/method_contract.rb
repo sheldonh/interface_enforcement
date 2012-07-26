@@ -1,52 +1,34 @@
+require 'test_interface/constraint'
+
 module TestInterface
 
   class Enforcer
 
     class MethodContract
+      UNCONSTRAINED_METHOD = {:args => Constraint::UNCONSTRAINED_TYPE, :returns => Constraint::UNCONSTRAINED_TYPE}
 
-      def initialize(constraints)
-        unless constraints == :allowed
-          set_args_rules(constraints[:args])
-          set_return_value_rule(constraints[:returns])
-        end
+      def initialize(specification)
+        specification = UNCONSTRAINED_METHOD if specification == :allowed
+        set_args_constraint(specification[:args])
+        set_return_value_constraint(specification[:returns])
       end
 
       def valid_args?(args)
-        return true unless @args_rules
-        args.each_with_index do |o, i|
-          @args_rules[i].call(o) or break false
-        end
+        @args_constraint.allows?(args)
       end
 
       def valid_return_value?(return_value)
-        return true unless @return_value_rule
-        @return_value_rule.call(return_value)
+        @return_value_constraint.allows?(return_value)
       end
 
       private
 
-      def set_args_rules(constraints)
-        if constraints.is_a?(Module)
-          @args_rules = args_rules [ constraints ]
-        elsif constraints.is_a?(Enumerable)
-          @args_rules = args_rules constraints
-        end
+      def set_args_constraint(specification)
+        @args_constraint = ArgsConstraint.new(specification)
       end
 
-      def args_rules(constraints)
-        constraints.map { |c| type_constrained_rule(c) }
-      end
-
-      def set_return_value_rule(constraint)
-        if constraint.is_a?(Proc)
-          @return_value_rule = constraint
-        elsif constraint.is_a?(Module)
-          @return_value_rule = type_constrained_rule(constraint)
-        end
-      end
-
-      def type_constrained_rule(constraint)
-        ->(o) { constraint == :any or o.is_a?(constraint) }
+      def set_return_value_constraint(specification)
+        @return_value_constraint = ReturnValueConstraint.new(specification)
       end
 
     end
