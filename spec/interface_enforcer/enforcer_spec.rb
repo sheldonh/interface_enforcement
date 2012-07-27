@@ -25,9 +25,10 @@ describe TestInterface::Enforcer do
       expect { subject.ask }.to raise_error(TestInterface::MethodViolation)
     end
 
-    it "honours subject privacy" do
+    it "does not expose private methods" do
       subject = TestInterface::Enforcer.new(private_method: :allowed).wrap(real_subject)
-      expect { subject.private_method }.to raise_error(NoMethodError)
+      expect { subject.private_method }.to raise_error TestInterface::ExceptionViolation
+      expect { subject.send(:private_method) }.to raise_error TestInterface::ExceptionViolation
     end
 
   end
@@ -144,6 +145,36 @@ describe TestInterface::Enforcer do
         expect { subject.tell("old knowledge") }.to raise_error TestInterface::ArgumentRuleViolation
       end
 
+    end
+
+  end
+
+  describe "exceptions" do
+
+    class TestExampleError < Exception; end
+
+    it "are allowed if contracted" do
+      real_subject.stub(:ask).and_raise TestExampleError
+      subject = TestInterface::Enforcer.new(:ask => { exceptions: :any }).wrap(real_subject)
+      expect { subject.ask }.to raise_error TestExampleError
+    end
+
+    it "are allowed if of contracted type" do
+      real_subject.stub(:ask).and_raise TestExampleError
+      subject = TestInterface::Enforcer.new(:ask => { exceptions: TestExampleError }).wrap(real_subject)
+      expect { subject.ask }.to raise_error TestExampleError
+    end
+
+    it "raise TestInterface::ExceptionViolation if not of contracted type" do
+      real_subject.stub(:ask).and_raise TestExampleError
+      subject = TestInterface::Enforcer.new(:ask => { exceptions: ArgumentError }).wrap(real_subject)
+      expect { subject.ask }.to raise_error TestInterface::ExceptionViolation
+    end
+
+    it "raise TestInterface::ExceptionViolation if uncontracted" do
+      real_subject.stub(:tell).and_raise TestExampleError
+      subject = TestInterface::Enforcer.new(:tell => { args: :any }).wrap(real_subject)
+      expect { subject.tell("something") }.to raise_error TestInterface::ExceptionViolation
     end
 
   end

@@ -33,10 +33,17 @@ module TestInterface
 
     def invoke_method
       @return_value = @subject.public_send(@method, *@args)
+    rescue Exception => e
+      constrain_exception(e)
+      raise
     end
 
     def constrain_return_value
       @contracts[@method].constrain_return_value(@return_value)
+    end
+
+    def constrain_exception(e)
+      @contracts[@method].constrain_exception(e)
     end
 
   end

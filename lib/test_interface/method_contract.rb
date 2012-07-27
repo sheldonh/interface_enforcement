@@ -9,6 +9,7 @@ module TestInterface
         specification = UNCONSTRAINED_METHOD if specification == :allowed
         set_args_constraint(specification[:args])
         set_return_value_constraint(specification[:returns])
+        set_exception_constraint(specification[:exceptions])
       end
 
       def constrain_args(args)
@@ -19,6 +20,10 @@ module TestInterface
         @return_value_constraint.constrain(return_value)
       end
 
+      def constrain_exception(exception)
+        @exception_constraint.constrain(exception)
+      end
+
       private
 
       def set_args_constraint(specification)
@@ -27,6 +32,10 @@ module TestInterface
 
       def set_return_value_constraint(specification)
         @return_value_constraint = ReturnValueConstraint.build(specification)
+      end
+
+      def set_exception_constraint(specification)
+        @exception_constraint = ExceptionConstraint.build(specification)
       end
 
     end
