@@ -119,10 +119,17 @@ describe TestInterface::Enforcer do
 
     describe "rule" do
 
-      it "is allowed allowed if the contracted rule is true for it" do
-        subject = TestInterface::Enforcer.new(tell: { args: ->(o) { o == "new knowledge" } }, :ask => :allowed).wrap(real_subject)
+      let(:rule)     { ->(a) { a.size == 1 and a.first == "new knowledge" } }
+      let(:enforcer) { TestInterface::Enforcer.new(tell: { args: rule }, :ask => :allowed) }
+      let(:subject)  { enforcer.wrap(real_subject) }
+
+      it "is allowed if the contracted rule is true for it" do
         subject.tell("new knowledge")
         subject.ask.should == "new knowledge"
+      end
+
+      it "raises TestInterface::ArgumentRuleViolation if the contracted rule is false for it" do
+        expect { subject.tell("old knowledge") }.to raise_error TestInterface::ArgumentRuleViolation
       end
 
     end
