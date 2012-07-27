@@ -1,5 +1,6 @@
 require 'test_interface/args_constraint'
 require 'test_interface/args_enumerable_constraint'
+require 'test_interface/args_none_constraint'
 require 'test_interface/args_proc_constraint'
 require 'test_interface/exception_constraint'
 require 'test_interface/enforcer'

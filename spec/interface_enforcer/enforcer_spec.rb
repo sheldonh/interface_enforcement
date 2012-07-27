@@ -119,12 +119,17 @@ describe TestInterface::Enforcer do
     describe "count" do
 
       it "raises TestInterface::ArgumentCountViolation if too numerous" do
-        subject = TestInterface::Enforcer.new(:ignore => { args: Object }).wrap(real_subject)
+        subject = TestInterface::Enforcer.new(ignore: { args: Object }).wrap(real_subject)
         expect { subject.ignore("too", "many arguments") }.to raise_error TestInterface::ArgumentCountViolation
       end
 
       it "raises TestInterface::ArgumentCountViolation if too few" do
-        subject = TestInterface::Enforcer.new(:tell => { args: [ String, String ] }).wrap(real_subject)
+        subject = TestInterface::Enforcer.new(tell: { args: [ String, String ] }).wrap(real_subject)
+        expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
+      end
+
+      it "raises TestInterface::ArgumentCountViolation if prohibited" do
+        subject = TestInterface::Enforcer.new(tell: { :args => :none }).wrap(real_subject)
         expect { subject.tell("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
       end
 

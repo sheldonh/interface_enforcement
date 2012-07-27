@@ -13,6 +13,8 @@ module TestInterface
         def self.build(specification)
           if specification.is_a?(Proc)
             ArgsProcConstraint.new(specification)
+          elsif specification == :none
+            ArgsNoneConstraint.new
           else
             ArgsEnumerableConstraint.new(specification)
           end
