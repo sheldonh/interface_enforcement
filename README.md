@@ -6,10 +6,17 @@ do things a certain way. It is an exploration of the forces and concerns at
 play when doing things a certain way. Think for yourself, and be kind to
 the children.
 
-If you're looking for a tool to use, consider these fine efforts instead:
+If you're looking for a polished tool to use, consider these fine efforts
+instead:
 
 * [Aditya Bhargava's contracts.ruby](http://egonschiele.github.com/contracts.ruby/) - A beautiful DSL for specifying contracts.
 * [Josh Cheek's surrogate](Framework to aid in handrolling mock/spy objects.) - A comfortable framework for handrolling mocks and spies.
+
+These projects' interface enforcement strategies are different from the one
+embodied in this one, but they are well worth consideration.  Contracts.ruby
+provides a fantastic DSL for embedding interface declaration in production
+code, and surrogate tackles the much broader scope of mock and spy specification
+and use, with weaker interface enforcement than Contracts.ruby or this project.
 
 Definition
 ----------
