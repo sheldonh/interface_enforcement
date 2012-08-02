@@ -5,7 +5,7 @@ module TestInterface
     def initialize(contract)
       @contracts = {}
       contract.each do |method, constraints|
-        @contracts[method] = MethodContract.new(constraints)
+        add_method_contract(method, constraints)
       end
     end
 
@@ -15,6 +15,10 @@ module TestInterface
     end
 
     private
+
+    def add_method_contract(method, constraints)
+      @contracts[method] = MethodContract.new(constraints)
+    end
 
     def method_missing(method, *args)
       @method, @args = method, args
@@ -38,12 +42,12 @@ module TestInterface
       raise
     end
 
-    def constrain_return_value
-      @contracts[@method].constrain_return_value(@return_value)
-    end
-
     def constrain_exception(e)
       @contracts[@method].constrain_exception(e)
+    end
+
+    def constrain_return_value
+      @contracts[@method].constrain_return_value(@return_value)
     end
 
   end

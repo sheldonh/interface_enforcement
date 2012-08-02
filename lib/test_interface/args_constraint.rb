@@ -34,7 +34,7 @@ module TestInterface
           specification.nil? or specification == UNCONSTRAINED_TYPE
         end
 
-        def set_constraints; raise NotImplementedError; end
+        def set_constraints(specification); raise NotImplementedError; end
         def constrain_args(args); raise NotImplementedError; end
 
       end
