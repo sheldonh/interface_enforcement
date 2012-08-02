@@ -1,57 +1,6 @@
-# This would be provided by the library; you don't define or modify this in
-# your own code.
-#
-class InterfaceEnforcer
+# The production code
+#####################
 
-  class Violation < RuntimeError; end
-  class ArgumentViolation < Violation; end
-  class ReturnViolation < Violation; end
-  class MethodViolation < Violation; end
-
-  def initialize(contract)
-    @contract = contract
-    @subject = nil
-  end
-
-  def wrap(subject)
-    @subject = subject
-    self
-  end
-
-  def method_missing(method, *args)
-    @method, @args = method, args
-    run_subject_through_contract
-  end
-
-  private
-
-  def run_subject_through_contract
-    enforce_contract_args
-    get_return_value_from_subject
-    enforce_contract_return
-    @return_value
-  end
-
-  def enforce_contract_args
-    method_contract[:args].call(@args) or raise ArgumentViolation
-  end
-
-  def get_return_value_from_subject
-    @return_value = @subject.send(@method, *@args)
-  end
-
-  def enforce_contract_return
-    method_contract[:return].call(@return_value) or raise ReturnViolation
-  end
-
-  def method_contract
-    @contract[@method] or raise MethodViolation
-  end
-
-end
-
-# From here on, it's your own code.
-#
 class Subscriber
 
   def initialize(publisher)
@@ -76,6 +25,12 @@ class Publisher
 
 end
 
+# The test suite
+################
+
+require 'spec_helper'
+require 'test_interface'
+
 module PublisherInterface
 
   CONTRACT = {
@@ -86,7 +41,7 @@ module PublisherInterface
   }
 
   def self.wrap(subject)
-    InterfaceEnforcer.new(CONTRACT).wrap(subject)
+    TestInterface::Enforcer.new(CONTRACT).wrap(subject)
   end
 
 end
