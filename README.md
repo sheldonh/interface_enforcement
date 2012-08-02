@@ -37,7 +37,7 @@ The file [demo/subscriber\_spec.rb](/sheldonh/interface_enforcer/tree/master/dem
 demonstrates the risk present in isolated testing in a loosely typed language,
 using a contrived example of an obvious mistake that nobody would make. What is
 being demonstrated is the mechanism of elective test interface enforcement, not
-the context in which they might be appropriate.
+the context in which it might be appropriate.
 
 The tests for the Subscriber use a test double for the Publisher. However, the
 double does not behave exactly like the Publisher; its gets method returns a
