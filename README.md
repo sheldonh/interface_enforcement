@@ -6,6 +6,11 @@ do things a certain way. It is an exploration of the forces and concerns at
 play when doing things a certain way. Think for yourself, and be kind to
 the children.
 
+If you're looking for a tool to use, consider these fine efforts instead:
+
+* [Aditya Bhargava's contracts.ruby](http://egonschiele.github.com/contracts.ruby/) - A beautiful DSL for specifying contracts.
+* [Josh Cheek's surrogate](Framework to aid in handrolling mock/spy objects.) - A comfortable framework for handrolling mocks and spies.
+
 Definition
 ----------
 
