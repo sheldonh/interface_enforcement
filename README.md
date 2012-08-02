@@ -33,7 +33,7 @@ test (the test subject).
 Demo
 ----
 
-The file [demo/subscriber\_spec.rb](/sheldonh/demo/subscriber_spec.rb)
+The file [demo/subscriber\_spec.rb](/sheldonh/interface_enforcer/tree/master/demo/subscriber_spec.rb)
 demonstrates the risk present in isolated testing in a loosely typed language,
 using a contrived example of an obvious mistake that nobody would make. What is
 being demonstrated is the mechanism of elective test interface enforcement, not
