@@ -6,26 +6,16 @@ module TestInterface
 
     class MethodContract
 
-      class ExceptionConstraint
-
-        include Constraint
+      module ExceptionConstraint
 
         def self.build(specification)
           if specification.is_a?(Proc)
-            ExceptionProcConstraint.new specification
+            TestInterface::Constraint::Rule.new(TestInterface::ExceptionViolation, specification)
           elsif specification == :none
-            ExceptionNoneConstraint.new
+            TestInterface::Constraint::None.new(TestInterface::ExceptionViolation)
           else
-            new(specification)
+            TestInterface::Constraint::Type.new(TestInterface::ExceptionViolation, specification)
           end
-        end
-
-        def initialize(definition)
-          @rule = type_constrained_rule(definition)
-        end
-
-        def constrain(exception)
-          @rule.call(exception) or raise TestInterface::ExceptionViolation
         end
 
       end

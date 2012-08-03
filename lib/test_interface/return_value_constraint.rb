@@ -6,24 +6,14 @@ module TestInterface
 
     class MethodContract
 
-      class ReturnValueConstraint
-
-        include Constraint
+      module ReturnValueConstraint
 
         def self.build(specification)
-          new(specification)
-        end
-
-        def initialize(definition)
-          if definition.is_a?(Proc)
-            @rule = definition
+          if specification.is_a?(Proc)
+            TestInterface::Constraint::Rule.new(TestInterface::ReturnViolation, specification)
           else
-            @rule = type_constrained_rule(definition)
+            TestInterface::Constraint::Type.new(TestInterface::ReturnViolation, specification)
           end
-        end
-
-        def constrain(return_value)
-          @rule.call(return_value) or raise TestInterface::ReturnViolation
         end
 
       end

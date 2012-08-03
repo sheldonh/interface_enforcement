@@ -16,7 +16,6 @@ module TestInterface
 
         def constrain_args(args)
           constrain_argument_count(args.size)
-          # TODO useless conditional
           if @rules
             args.each_with_index do |o, i|
               @rules[i].call(o) or raise TestInterface::ArgumentTypeViolation
