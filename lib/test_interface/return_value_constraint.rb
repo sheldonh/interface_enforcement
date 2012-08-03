@@ -21,7 +21,7 @@ module TestInterface
         end
 
         def constrain(return_value)
-          @rule.call(return_value) or raise ReturnViolation
+          @rule.call(return_value) or raise TestInterface::ReturnViolation
         end
 
       end

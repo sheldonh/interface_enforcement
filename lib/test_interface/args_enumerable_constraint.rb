@@ -18,14 +18,15 @@ module TestInterface
           constrain_argument_count(args.size)
           if @rules
             args.each_with_index do |o, i|
-              @rules[i].call(o) or raise ArgumentTypeViolation
+              @rules[i].call(o) or raise TestInterface::ArgumentTypeViolation
             end
           end
         end
 
         def constrain_argument_count(actual)
           if @constrained_argument_count && @constrained_argument_count != actual
-            raise ArgumentCountViolation.new "wrong number of arguments (#{actual} for #{@constrained_argument_count})"
+            message = "wrong number of arguments (#{actual} for #@constrained_argument_count)"
+            raise TestInterface::ArgumentCountViolation.new message
           end
         end
 

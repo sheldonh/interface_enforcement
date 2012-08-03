@@ -12,7 +12,7 @@ module TestInterface
         private
 
         def constrain_args(args)
-          raise ArgumentCountViolation
+          raise TestInterface::ArgumentCountViolation
         end
 
       end

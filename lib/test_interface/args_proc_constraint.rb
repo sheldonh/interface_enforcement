@@ -13,7 +13,7 @@ module TestInterface
         end
 
         def constrain_args(args)
-          @rule.call(args) or raise ArgumentRuleViolation
+          @rule.call(args) or raise TestInterface::ArgumentRuleViolation
         end
 
       end

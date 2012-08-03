@@ -28,7 +28,7 @@ module TestInterface
     end
 
     def constrain_method_invocation
-      @contracts.include?(@method) or raise MethodViolation
+      @contracts.include?(@method) or raise TestInterface::MethodViolation
     end
 
     def constrain_args
