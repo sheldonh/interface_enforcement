@@ -1,3 +1,5 @@
+require 'test_interface/constraint'
+
 module TestInterface
 
   class Enforcer
@@ -9,17 +11,17 @@ module TestInterface
         include Constraint
 
         def self.build(specification)
-          new(specification)
+          if specification.is_a?(Proc)
+            ExceptionProcConstraint.new specification
+          elsif specification == :none
+            ExceptionNoneConstraint.new
+          else
+            new(specification)
+          end
         end
 
         def initialize(definition)
-          if definition.nil?
-            @rule = ->(o) { false }
-          elsif definition == :any
-            @rule = ->(o) { true }
-          else
-            @rule = type_constrained_rule(definition)
-          end
+          @rule = type_constrained_rule(definition)
         end
 
         def constrain(exception)

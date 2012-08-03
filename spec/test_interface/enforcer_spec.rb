@@ -24,7 +24,6 @@ describe TestInterface::Enforcer do
 
   include TestInterface::RspecSugar
 
-
   describe "method invocation" do
 
     it "is delegated to the subject if contracted" do
@@ -40,8 +39,8 @@ describe TestInterface::Enforcer do
 
     it "does not expose private methods" do
       subject = enforce(:private_method => :allowed).on(Subject.new)
-      expect { subject.private_method }.to raise_error TestInterface::ExceptionViolation
-      expect { subject.send(:private_method) }.to raise_error TestInterface::ExceptionViolation
+      expect { subject.private_method }.to raise_error NoMethodError
+      expect { subject.send(:private_method) }.to raise_error NoMethodError
     end
 
   end
@@ -137,13 +136,18 @@ describe TestInterface::Enforcer do
       end
 
       it "raises TestInterface::ArgumentCountViolation if too few" do
-        subject = enforce(set: { args: [ String, String ] }).on(Subject.new)
-        expect { subject.set("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
+        subject = enforce(ignore: { args: [ String, String ] }).on(Subject.new)
+        expect { subject.ignore("too few arguments") }.to raise_error TestInterface::ArgumentCountViolation
       end
 
       it "raises TestInterface::ArgumentCountViolation if prohibited" do
-        subject = enforce(set: { :args => :none }).on(Subject.new)
-        expect { subject.set("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
+        subject = enforce(get: { :args => :none }).on(Subject.new)
+        expect { subject.get("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
+      end
+
+      it "is allowed to be zero when prohibited" do
+        subject = enforce(get: { :args => :none }).on(Subject.new)
+        expect { subject.get }.to_not raise_error
       end
 
     end
@@ -174,7 +178,12 @@ describe TestInterface::Enforcer do
       Subject.new.tap { |o| o.stub(:get).and_raise TestExampleError }
     end
 
-    it "are allowed if contracted" do
+    it "are allowed if uncontracted" do
+      subject = enforce(get: {:args => :any}).on(exploding_subject)
+      expect { subject.get }.to raise_error TestExampleError
+    end
+
+    it "are allowed if unconstrained" do
       subject = enforce(get: {:exceptions => :any}).on(exploding_subject)
       expect { subject.get }.to raise_error TestExampleError
     end
@@ -189,9 +198,25 @@ describe TestInterface::Enforcer do
       expect { subject.get }.to raise_error TestInterface::ExceptionViolation
     end
 
-    it "raise TestInterface::ExceptionViolation if uncontracted" do
-      subject = enforce(get: {:args => :any}).on(exploding_subject)
+    it "raises TestInterface::ExceptionViolation if prohibited" do
+      subject = enforce(get: {:exceptions => :none}).on(exploding_subject)
       expect { subject.get }.to raise_error TestInterface::ExceptionViolation
+    end
+
+    describe "rule" do
+
+      it "allows an exception if it returns true for the exception" do
+        rule = ->(e) { true }
+        subject = enforce(get: {:exceptions => rule}).on(exploding_subject)
+        expect { subject.get }.to raise_error TestExampleError
+      end
+
+      it "raises TestInterface::ExceptionViolation it it returns false for the exception" do
+        rule = ->(e) { false }
+        subject = enforce(get: {:exceptions => rule}).on(exploding_subject)
+        expect { subject.get }.to raise_error TestInterface::ExceptionViolation
+      end
+
     end
 
   end

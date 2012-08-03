@@ -1,3 +1,5 @@
+require 'test_interface/constraint'
+
 module TestInterface
 
   class Enforcer

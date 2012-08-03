@@ -12,7 +12,7 @@ module TestInterface
         private
 
         def constrain_args(args)
-          raise TestInterface::ArgumentCountViolation
+          args.empty? or raise TestInterface::ArgumentCountViolation
         end
 
       end
