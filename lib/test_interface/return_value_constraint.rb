@@ -6,9 +6,9 @@ module TestInterface
 
     def self.build(specification)
       if specification.is_a?(Proc)
-        TestInterface::Constraint::Rule.new(TestInterface::ReturnViolation, specification)
+        Constraint::Rule.new(ReturnViolation, specification)
       else
-        TestInterface::Constraint::Type.new(TestInterface::ReturnViolation, specification)
+        Constraint::Type.new(ReturnViolation, specification)
       end
     end
 

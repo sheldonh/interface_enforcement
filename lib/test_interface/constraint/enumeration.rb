@@ -12,8 +12,8 @@ module TestInterface
 
       def set_constraints(enumeration)
         enumeration = [ enumeration ] unless enumeration.is_a?(Enumerable)
-        @rules = enumeration.map { |c| TestInterface::Constraint::Type.new(@exception, c) }
-        @constrained_argument_count = enumeration.size
+        @rules = enumeration.map { |c| Constraint::Type.new(@exception, c) }
+        @constrained_enum_size = enumeration.size
       end
       private :set_constraints
 
@@ -22,23 +22,23 @@ module TestInterface
       end
       private :unconstrained?
 
-      def constrain(args)
-        constrain_argument_count(args.size)
-        constrain_each(args)
+      def constrain(enum)
+        constrain_enum_size(enum.size)
+        constrain_each(enum)
       end
 
-      # TODO This is the only Constraint that knows about its own exception types. Push back.
-      def constrain_argument_count(actual)
-        if @constrained_argument_count && @constrained_argument_count != actual
-          message = "wrong number of arguments (#{actual} for #@constrained_argument_count)"
-          raise TestInterface::ArgumentCountViolation.new message
+      # TODO Use of "arguments" in message is smelly.
+      def constrain_enum_size(actual)
+        if @constrained_enum_size && @constrained_enum_size != actual
+          message = "wrong number of arguments (#{actual} for #@constrained_enum_size)"
+          raise @exception, message
         end
       end
-      private :constrain_argument_count
+      private :constrain_enum_size
 
-      def constrain_each(args)
+      def constrain_each(enum)
         if @rules
-          args.each_with_index do |o, i|
+          enum.each_with_index do |o, i|
             @rules[i].constrain(o)
           end
         end

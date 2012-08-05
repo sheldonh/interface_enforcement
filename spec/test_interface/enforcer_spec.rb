@@ -107,9 +107,9 @@ describe TestInterface::Enforcer do
         expect { subject.set("new knowledge") }.to_not raise_error
       end
 
-      it "raises a TestInterface::ArgumentTypeViolation if uncontracted for one argument" do
+      it "raises a TestInterface::ArgumentViolation if uncontracted for one argument" do
         subject = enforce(set: {args: Numeric}).on(Subject.new)
-        expect { subject.set("new knowledge") }.to raise_error TestInterface::ArgumentTypeViolation
+        expect { subject.set("new knowledge") }.to raise_error TestInterface::ArgumentViolation
       end
 
     end
@@ -121,28 +121,28 @@ describe TestInterface::Enforcer do
         expect { subject.ignore("wrong", "types") }.to_not raise_error
       end
 
-      it "raise TestInterface::ArgumentTypeViolation if not all contracted" do
+      it "raise TestInterface::ArgumentViolation if not all contracted" do
         subject = enforce(ignore: {args: [:any, Numeric]}).on(Subject.new)
-        expect { subject.ignore("wrong", "types") }.to raise_error TestInterface::ArgumentTypeViolation
+        expect { subject.ignore("wrong", "types") }.to raise_error TestInterface::ArgumentViolation
       end
 
     end
 
     describe "count" do
 
-      it "raises TestInterface::ArgumentCountViolation if too numerous" do
+      it "raises TestInterface::ArgumentViolation if too numerous" do
         subject = enforce(ignore: { args: Object }).on(Subject.new)
-        expect { subject.ignore("too", "many arguments") }.to raise_error TestInterface::ArgumentCountViolation
+        expect { subject.ignore("too", "many arguments") }.to raise_error TestInterface::ArgumentViolation
       end
 
-      it "raises TestInterface::ArgumentCountViolation if too few" do
+      it "raises TestInterface::ArgumentViolation if too few" do
         subject = enforce(ignore: { args: [ String, String ] }).on(Subject.new)
-        expect { subject.ignore("too few arguments") }.to raise_error TestInterface::ArgumentCountViolation
+        expect { subject.ignore("too few arguments") }.to raise_error TestInterface::ArgumentViolation
       end
 
-      it "raises TestInterface::ArgumentCountViolation if prohibited" do
+      it "raises TestInterface::ArgumentViolation if prohibited" do
         subject = enforce(get: { :args => :none }).on(Subject.new)
-        expect { subject.get("new knowledge") }.to raise_error TestInterface::ArgumentCountViolation
+        expect { subject.get("new knowledge") }.to raise_error TestInterface::ArgumentViolation
       end
 
       it "is allowed to be zero when prohibited" do
@@ -162,8 +162,8 @@ describe TestInterface::Enforcer do
         subject.get.should == "new knowledge"
       end
 
-      it "raises TestInterface::ArgumentRuleViolation it it returns false for them" do
-        expect { subject.set("old knowledge") }.to raise_error TestInterface::ArgumentRuleViolation
+      it "raises TestInterface::ArgumentViolation it it returns false for them" do
+        expect { subject.set("old knowledge") }.to raise_error TestInterface::ArgumentViolation
       end
 
     end

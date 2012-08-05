@@ -6,11 +6,11 @@ module TestInterface
 
     def self.build(specification)
       if specification.is_a?(Proc)
-        TestInterface::Constraint::Rule.new(TestInterface::ArgumentRuleViolation, specification)
+        Constraint::Rule.new(ArgumentViolation, specification)
       elsif specification == :none
-        TestInterface::Constraint::None.new(TestInterface::ArgumentCountViolation)
+        Constraint::None.new(ArgumentViolation)
       else
-        TestInterface::Constraint::Enumeration.new(TestInterface::ArgumentTypeViolation, specification)
+        Constraint::Enumeration.new(ArgumentViolation, specification)
       end
     end
 
