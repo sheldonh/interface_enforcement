@@ -1,8 +1,4 @@
 require 'test_interface/args_constraint'
-require 'test_interface/args_enumerable_constraint'
-require 'test_interface/constraint/none'
-require 'test_interface/constraint/rule'
-require 'test_interface/constraint/type'
 require 'test_interface/exception_constraint'
 require 'test_interface/enforcer'
 require 'test_interface/method_contract'

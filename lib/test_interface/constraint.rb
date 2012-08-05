@@ -1,20 +1,13 @@
+require 'test_interface/constraint/enumeration'
+require 'test_interface/constraint/none'
+require 'test_interface/constraint/rule'
+require 'test_interface/constraint/type'
+
 module TestInterface
 
-  class Enforcer
+  module Constraint
 
-    class MethodContract
-
-      module Constraint
-
-        UNCONSTRAINED_TYPE = :any
-
-        def type_constrained_rule(type)
-          ->(o) { type.nil? or type == UNCONSTRAINED_TYPE or o.is_a?(type) }
-        end
-
-      end
-
-    end
+    UNCONSTRAINED_TYPE = :any
 
   end
 
