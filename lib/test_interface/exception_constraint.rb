@@ -9,8 +9,10 @@ module TestInterface
         Constraint::Rule.new(ExceptionViolation, specification)
       elsif specification == :none
         Constraint::None.new(ExceptionViolation)
-      else
+      elsif specification.is_a?(Module)
         Constraint::Type.new(ExceptionViolation, specification)
+      else
+        Constraint::Open.new
       end
     end
 

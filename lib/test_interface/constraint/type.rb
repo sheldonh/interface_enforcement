@@ -10,13 +10,7 @@ module TestInterface
       end
 
       def constrain(o)
-        raise @exception unless unconstrained? or o.is_a?(@type)
-      end
-
-      private
-
-      def unconstrained?
-        @type.nil? or @type == UNCONSTRAINED_TYPE
+        raise @exception unless o.is_a?(@type)
       end
 
     end
