@@ -1,3 +1,6 @@
+require 'test_interface/method_contract'
+require 'test_interface/violation'
+
 module TestInterface
 
   class Enforcer

@@ -1,4 +1,5 @@
 require 'test_interface/constraint'
+require 'test_interface/violation'
 
 module TestInterface
 
