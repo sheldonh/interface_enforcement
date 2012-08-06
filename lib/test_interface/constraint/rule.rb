@@ -4,13 +4,12 @@ module TestInterface
 
     class Rule
 
-      def initialize(exception, callable)
-        @exception = exception
+      def initialize(callable)
         @callable = callable
       end
 
       def constrain(o)
-        raise @exception unless @callable.call(o)
+        @callable.call(o)
       end
 
     end

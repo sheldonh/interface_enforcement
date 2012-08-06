@@ -4,13 +4,12 @@ module TestInterface
 
     class Type
 
-      def initialize(exception, type)
-        @exception = exception
+      def initialize(type)
         @type = type
       end
 
       def constrain(o)
-        raise @exception unless o.is_a?(@type)
+        o.is_a?(@type)
       end
 
     end

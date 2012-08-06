@@ -4,12 +4,8 @@ module TestInterface
 
     class None
 
-      def initialize(exception)
-        @exception = exception
-      end
-
       def constrain(o)
-        raise @exception unless nothing_received?(o)
+        nothing_received?(o)
       end
 
       private

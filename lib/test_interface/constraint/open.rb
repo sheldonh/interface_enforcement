@@ -5,6 +5,7 @@ module TestInterface
     class Open
 
       def constrain(o)
+        true
       end
 
     end
