@@ -5,7 +5,7 @@ module TestInterface
     class Enumeration
 
       def initialize(enumeration)
-        @rules = enumeration.map { |c| Constraint.build(specification, :type, :any) }
+        @rules = enumeration.map { |c| Constraint.build(c, :type, :any) }
       end
 
       def constrain(enum)

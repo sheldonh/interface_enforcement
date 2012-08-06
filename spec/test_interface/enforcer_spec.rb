@@ -118,7 +118,7 @@ describe TestInterface::Enforcer do
 
       it "are allowed if each one is contracted" do
         subject = enforce(ignore: {args: [String, :any]}).on(Subject.new)
-        expect { subject.ignore("wrong", "types") }.to_not raise_error
+        expect { subject.ignore("correct", "types") }.to_not raise_error
       end
 
       it "raise TestInterface::ArgumentViolation if not all contracted" do

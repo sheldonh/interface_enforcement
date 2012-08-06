@@ -10,35 +10,54 @@ module TestInterface
 
     UNCONSTRAINED_TYPE = :any
 
-    def self.build(specification, *builders)
-      constraint = builders.detect do |builder|
-        send("try_build_#{builder}", specification)
+    def self.build(specification, *strategies)
+      Builder.new(specification, *strategies).build
+    end
+
+    private
+
+    class Builder
+
+      def initialize(specification, *strategies)
+        @specification = specification
+        @strategies = strategies
       end
-      constraint or raise "unknown constraint specification #{specification.inspect}"
-    end
 
-    def self.try_build_any(specification)
-      Constraint::Open.new if specification.nil? or specification == UNCONSTRAINED_TYPE
-    end
+      def build
+        @strategies.detect { |strategy| @constraint = try_build(strategy) }
+        @constraint
+      end
 
-    def self.try_build_enum(specification)
-      Constraint::Enumeration.new(specification) if specification.is_a?(Enumerable)
-    end
+      private
 
-    def self.try_build_enum_of_one(specification)
-      Constraint::Enumeration.new([ specification ]) if specification.is_a?(Module)
-    end
+      def try_build(strategy)
+        send("build_#{strategy}")
+      end
 
-    def self.try_build_none(specification)
-      Constraint::None.new if specification == :none
-    end
+      def build_any
+        Constraint::Open.new if @specification.nil? or @specification == UNCONSTRAINED_TYPE
+      end
 
-    def self.try_build_rule(specification)
-      Constraint::Rule.new(specification) if specification.is_a?(Proc)
-    end
+      def build_enum
+        Constraint::Enumeration.new(@specification) if @specification.is_a?(Enumerable)
+      end
 
-    def self.try_build_type(specification)
-      Constraint::Type.new(specification) if specification.is_a?(Module)
+      def build_enum_of_one
+        Constraint::Enumeration.new([@specification]) if @specification.is_a?(Module)
+      end
+
+      def build_none
+        Constraint::None.new if @specification == :none
+      end
+
+      def build_rule
+        Constraint::Rule.new(@specification) if @specification.is_a?(Proc)
+      end
+
+      def build_type
+        Constraint::Type.new(@specification) if @specification.is_a?(Module)
+      end
+
     end
 
   end
