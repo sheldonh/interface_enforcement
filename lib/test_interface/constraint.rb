@@ -25,13 +25,15 @@ module TestInterface
 
       def build
         @strategies.detect { |strategy| @constraint = try_build(strategy) }
-        @constraint
+        @constraint or raise ArgumentError, "all strategies gave up on #{@specification.inspect}"
       end
 
       private
 
       def try_build(strategy)
         send("build_#{strategy}")
+      rescue NoMethodError
+        raise ArgumentError, "unknown constraint builder strategy #{strategy.inspect}"
       end
 
       def build_any
