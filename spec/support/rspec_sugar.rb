@@ -4,18 +4,18 @@ module TestInterface
   module RspecSugar
 
     class Enforcement
-      def initialize(enforcer)
-        @enforcer = enforcer
+      def initialize(interface)
+        @interface = interface
       end
 
       def on(subject)
-        @enforcer.wrap(subject)
+        @interface.proxy(subject)
       end
     end
 
     def enforce(contract)
-      enforcer = TestInterface::Enforcer.new(contract)
-      Enforcement.new(enforcer)
+      interface = TestInterface::Interface.new(contract)
+      Enforcement.new(interface)
     end
   end
 end

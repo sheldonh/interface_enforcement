@@ -20,7 +20,7 @@ class Subject
   end
 end
 
-describe TestInterface::Enforcer do
+describe TestInterface::Interface do
 
   include TestInterface::RspecSugar
 
@@ -32,9 +32,9 @@ describe TestInterface::Enforcer do
       subject.get.should eq("new knowledge")
     end
 
-    it "raises a TestInterface::MethodViolation if uncontracted" do
+    it "raises a NoMethodError if uncontracted" do
       subject = enforce(:set => :allowed).on(Subject.new)
-      expect { subject.get }.to raise_error(TestInterface::MethodViolation)
+      expect { subject.get }.to raise_error(NoMethodError)
     end
 
     it "does not expose private methods" do

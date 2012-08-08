@@ -41,7 +41,7 @@ module PublisherInterface
   }
 
   def self.wrap(subject)
-    TestInterface::Enforcer.new(CONTRACT).wrap(subject)
+    TestInterface::Interface.new(CONTRACT).proxy(subject)
   end
 
 end
