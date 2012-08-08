@@ -12,18 +12,25 @@ module TestInterface
 
     def setup_delegators
       @interface.each_method_name do |method_name|
-        instance_eval delegator_definition(method_name)
+        ensure_method_responds(method_name)
+        define_delegator_method(method_name)
       end
     end
 
-    def delegator_definition(method_name)
-      %Q{
-          def #{method_name}(*args)
-            @method, @args = :#{method_name}, args
-            constrain_args
-            invoke_method.tap { constrain_return_value }
-          end
-        }
+    def ensure_method_responds(method_name)
+      if !@subject.respond_to?(method_name)
+        raise ArgumentError, "nonexistent method #{method_name} may not form part of an interface"
+      end
+    end
+
+    def define_delegator_method(method_name)
+      instance_eval %Q{
+        def #{method_name}(*args)
+          @method, @args = :#{method_name}, args
+          constrain_args
+          invoke_method.tap { constrain_return_value }
+        end
+      }
     end
 
     def constrain_args
@@ -31,7 +38,7 @@ module TestInterface
     end
 
     def invoke_method
-      @return_value = @subject.public_send(@method, *@args)
+      @return_value = @subject.send(@method, *@args)
     rescue Exception => e
       constrain_exception(e)
       raise

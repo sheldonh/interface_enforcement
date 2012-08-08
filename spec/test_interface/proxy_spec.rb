@@ -13,6 +13,16 @@ class Subject
     args
   end
 
+  def public_method
+    private_method
+  end
+
+  protected
+
+  def protected_method
+    "a shared secret"
+  end
+
   private
 
   def private_method
@@ -37,10 +47,50 @@ describe TestInterface::Proxy do
       expect { proxy.get }.to raise_error(NoMethodError)
     end
 
-    it "does not expose private methods" do
-      proxy = interface(:private_method => :allowed).proxy(Subject.new)
-      expect { proxy.private_method }.to raise_error NoMethodError
-      expect { proxy.send(:private_method) }.to raise_error NoMethodError
+    it "raises an ArgumentError if contracted against a private method" do
+      expect { interface(:private_method => :allowed).proxy(Subject.new) }.to raise_error ArgumentError
+    end
+
+    it "raises an ArgumentError if contracted against a nonexistent method" do
+      expect { interface(:nonexistent => :allowed).proxy(Subject.new) }.to raise_error ArgumentError
+    end
+
+    it "does not prevent the subject's own access to its own private methods" do
+      proxy = interface(:public_method => :allowed).proxy(Subject.new)
+      proxy.public_method == "a secret"
+    end
+
+    context "protected methods" do
+
+      module SubjectSharing
+        def initialize(subject)
+          @subject = subject
+        end
+
+        def shared_secret
+          @subject.protected_method
+        end
+      end
+
+      class Descendant < Subject
+        include SubjectSharing
+      end
+
+      class NonDescendant
+        include SubjectSharing
+      end
+
+      it "does not prevent legitimate access to the subject's protected methods" do
+        proxy = interface(:protected_method => :allowed).proxy(Subject.new)
+        Descendant.new(proxy).shared_secret.should == "a shared secret"
+      end
+
+      # TODO not sure I can have this without the sender gem, which is broken: "sender.so: undefined symbol: ruby_current_thread"
+      it "does not allow illegitimate access to the subject's protected methods" do
+        proxy = interface(:protected_method => :allowed).proxy(Subject.new)
+        expect { NonDescendant.new(proxy).shared_secret }.to raise_error TestInterface::PrivacyViolation
+      end
+
     end
 
   end
