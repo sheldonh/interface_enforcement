@@ -8,12 +8,12 @@ module TestInterface
         @interface = interface
       end
 
-      def on(subject)
+      def proxy(subject)
         @interface.proxy(subject)
       end
     end
 
-    def enforce(contract)
+    def interface(contract)
       interface = TestInterface::Interface.new(contract)
       Enforcement.new(interface)
     end
