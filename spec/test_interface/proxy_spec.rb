@@ -13,7 +13,7 @@ class Subject
     args
   end
 
-  def public_method
+  def expose_secret
     private_method
   end
 
@@ -42,9 +42,9 @@ describe TestInterface::Proxy do
       proxy.get.should eq("new knowledge")
     end
 
-    it "raises a NoMethodError if uncontracted" do
+    it "raises a TestInterface::MethodViolation if uncontracted" do
       proxy = interface(:set => :allowed).proxy(Subject.new)
-      expect { proxy.get }.to raise_error(NoMethodError)
+      expect { proxy.get }.to raise_error TestInterface::MethodViolation
     end
 
     context "private methods" do
@@ -58,8 +58,8 @@ describe TestInterface::Proxy do
       end
 
       it "does not prevent the subject's own access to its own private methods" do
-        proxy = interface(:public_method => :allowed).proxy(Subject.new)
-        proxy.public_method == "a secret"
+        proxy = interface(:expose_secret => :allowed).proxy(Subject.new)
+        proxy.expose_secret == "a secret"
       end
 
     end

@@ -17,7 +17,6 @@ module TestInterface
     def setup_delegators
       @interface.each_method_name do |method_name|
         ensure_method_responds(method_name)
-        define_delegator_method(method_name)
       end
     end
 
@@ -33,6 +32,10 @@ module TestInterface
           @enforcer.enforce(:#{method_name}, args, __sender__)
         end
       }
+    end
+
+    def method_missing(method, *args)
+      @enforcer.enforce(method, args, __sender__)
     end
 
   end

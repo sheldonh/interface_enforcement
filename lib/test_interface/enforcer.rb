@@ -4,9 +4,10 @@ module TestInterface
 
   class Enforcer
 
-    def initialize(interface, subject)
+    def initialize(interface, subject, method_invocation_prefix = nil)
       @interface = interface
       @subject = subject
+      @method_invocation_prefix = method_invocation_prefix
     end
 
     def enforce(method, args, sender)
@@ -38,10 +39,14 @@ module TestInterface
     end
 
     def invoke_method
-      @return_value = @subject.send(@method, *@args)
+      @return_value = @subject.send(method_to_invoke, *@args)
     rescue Exception => e
       constrain_exception(e)
       raise
+    end
+
+    def method_to_invoke
+      :"#{@method_invocation_prefix}#{@method}"
     end
 
     def constrain_exception(e)
@@ -53,7 +58,7 @@ module TestInterface
     end
 
     def method_contract
-      @interface.method_contract(@method)
+      @interface.method_contract(@method) or raise MethodViolation
     end
 
   end

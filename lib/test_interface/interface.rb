@@ -1,3 +1,4 @@
+require 'test_interface/injector'
 require 'test_interface/method_contract'
 require 'test_interface/proxy'
 
