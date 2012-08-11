@@ -47,17 +47,21 @@ describe TestInterface::Proxy do
       expect { proxy.get }.to raise_error(NoMethodError)
     end
 
-    it "raises an ArgumentError if contracted against a private method" do
-      expect { interface(:private_method => :allowed).proxy(Subject.new) }.to raise_error ArgumentError
-    end
+    context "private methods" do
 
-    it "raises an ArgumentError if contracted against a nonexistent method" do
-      expect { interface(:nonexistent => :allowed).proxy(Subject.new) }.to raise_error ArgumentError
-    end
+      it "raises an ArgumentError if contracted against a private method" do
+        expect { interface(:private_method => :allowed).proxy(Subject.new) }.to raise_error ArgumentError
+      end
 
-    it "does not prevent the subject's own access to its own private methods" do
-      proxy = interface(:public_method => :allowed).proxy(Subject.new)
-      proxy.public_method == "a secret"
+      it "raises an ArgumentError if contracted against a nonexistent method" do
+        expect { interface(:nonexistent => :allowed).proxy(Subject.new) }.to raise_error ArgumentError
+      end
+
+      it "does not prevent the subject's own access to its own private methods" do
+        proxy = interface(:public_method => :allowed).proxy(Subject.new)
+        proxy.public_method == "a secret"
+      end
+
     end
 
     context "protected methods" do
@@ -85,7 +89,6 @@ describe TestInterface::Proxy do
         Descendant.new(proxy).shared_secret.should == "a shared secret"
       end
 
-      # TODO not sure I can have this without the sender gem, which is broken: "sender.so: undefined symbol: ruby_current_thread"
       it "does not allow illegitimate access to the subject's protected methods" do
         proxy = interface(:protected_method => :allowed).proxy(Subject.new)
         expect { NonDescendant.new(proxy).shared_secret }.to raise_error TestInterface::PrivacyViolation
