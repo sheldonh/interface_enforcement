@@ -1,5 +1,4 @@
 require 'test_interface/constraint'
-require 'test_interface/violation'
 
 module TestInterface
 
@@ -15,15 +14,15 @@ module TestInterface
     end
 
     def constrain_args(args)
-      @args_constraint.constrain(args) or raise ArgumentViolation
+      @args_constraint.constrain(args)
     end
 
     def constrain_return_value(return_value)
-      @return_value_constraint.constrain(return_value) or raise ReturnViolation
+      @return_value_constraint.constrain(return_value)
     end
 
     def constrain_exception(exception)
-      @exception_constraint.constrain(exception) or raise ExceptionViolation
+      @exception_constraint.constrain(exception)
     end
 
     private
