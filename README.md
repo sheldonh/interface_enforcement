@@ -18,6 +18,11 @@ provides a fantastic DSL for embedding interface declaration in production
 code, and surrogate tackles the much broader scope of mock and spy specification
 and use, with weaker interface enforcement than Contracts.ruby or this project.
 
+Also note that one of the dependencies of this gem is currently broken on
+ruby-1.9.3, as per [sender issue #4](https://github.com/Asher-/sender/issues/4).
+I'm currently working around this by applying [ruby pull #47](https://github.com/ruby/ruby/pull/47)
+to my ruby.
+
 Definition
 ----------
 
