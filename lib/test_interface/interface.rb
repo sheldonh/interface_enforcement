@@ -14,8 +14,11 @@ module TestInterface
     end
 
     def proxy(subject)
-      @subject = subject
-      TestInterface::Proxy.new(self, @subject)
+      TestInterface::Proxy.new(self, subject)
+    end
+
+    def inject(subject)
+      TestInterface::Injector.new(self).inject(subject)
     end
 
     def each_method_name

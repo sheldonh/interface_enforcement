@@ -11,6 +11,10 @@ module TestInterface
       def proxy(subject)
         @interface.proxy(subject)
       end
+
+      def inject(subject)
+        @interface.inject(subject)
+      end
     end
 
     def interface(contract)

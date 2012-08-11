@@ -32,18 +32,20 @@ end
 
 describe TestInterface::Injector do
 
+  include TestInterface::RspecSugar
+
   describe "method invocation" do
 
     it "is delegated to the subject if contracted" do
       subject = Subject.new
-      TestInterface::Injector.new(TestInterface::Interface.new(:get => :allowed, :set => :allowed)).inject(subject)
+      interface(:get => :allowed, :set => :allowed).inject(subject)
       subject.set("new knowledge")
       subject.get.should eq("new knowledge")
     end
 
     it "raises a NoMethodError if uncontracted" do
       subject = Subject.new
-      TestInterface::Injector.new(TestInterface::Interface.new(:set => :allowed)).inject(subject)
+      interface(:set => :allowed).inject(subject)
       expect { subject.get }.to raise_error TestInterface::MethodViolation
     end
 
