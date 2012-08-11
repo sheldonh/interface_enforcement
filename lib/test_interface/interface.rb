@@ -21,9 +21,10 @@ module TestInterface
       TestInterface::Injector.new(self).inject(subject)
     end
 
-    def each_method_name
+    # TODO push this privacy check into Enforcer, making it a runtime concern (to support dynamism)
+    def ensure_valid_for_subject(subject)
       @contracts.each_key do |method|
-        yield method
+        ensure_subject_responds(subject, method)
       end
     end
 
@@ -35,6 +36,12 @@ module TestInterface
 
     def add_method_contract(method, constraints)
       @contracts[method] = MethodContract.new(constraints)
+    end
+
+    def ensure_subject_responds(subject, method_name)
+      if !subject.respond_to?(method_name)
+        raise ArgumentError, "nonexistent or private method #{method_name} may not form part of an interface"
+      end
     end
 
   end
