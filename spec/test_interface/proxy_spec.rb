@@ -1,35 +1,5 @@
 require 'spec_helper'
 
-class Subject
-  def get
-    @knowledge || "the default"
-  end
-
-  def set(something)
-    @knowledge = something
-  end
-
-  def ignore(*args)
-    args
-  end
-
-  def expose_secret
-    private_method
-  end
-
-  protected
-
-  def protected_method
-    "a shared secret"
-  end
-
-  private
-
-  def private_method
-    "a secret"
-  end
-end
-
 describe TestInterface::Proxy do
 
   include TestInterface::RspecSugar
@@ -66,24 +36,6 @@ describe TestInterface::Proxy do
 
     context "protected methods" do
 
-      module SubjectSharing
-        def initialize(subject)
-          @subject = subject
-        end
-
-        def shared_secret
-          @subject.protected_method
-        end
-      end
-
-      class Descendant < Subject
-        include SubjectSharing
-      end
-
-      class NonDescendant
-        include SubjectSharing
-      end
-
       it "does not prevent legitimate access to the subject's protected methods" do
         proxy = interface(:protected_method => :allowed).proxy(Subject.new)
         Descendant.new(proxy).shared_secret.should == "a shared secret"
@@ -91,7 +43,7 @@ describe TestInterface::Proxy do
 
       it "does not allow illegitimate access to the subject's protected methods" do
         proxy = interface(:protected_method => :allowed).proxy(Subject.new)
-        expect { NonDescendant.new(proxy).shared_secret }.to raise_error TestInterface::PrivacyViolation
+        expect { NonDescendant.new(proxy).shared_secret }.to raise_error NoMethodError
       end
 
     end
@@ -149,7 +101,6 @@ describe TestInterface::Proxy do
 
     it "are allowed if unconstrained" do
       proxy = interface(set: { :args => :any }).proxy(Subject.new)
-      proxy.set("new knowledge")
       expect { proxy.set("new knowledge") }.to_not raise_error
     end
 

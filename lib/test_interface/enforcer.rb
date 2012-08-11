@@ -21,7 +21,7 @@ module TestInterface
 
     def constrain_protected_access
       if protected_method?
-        subject_is_ancestor_of_sender? or raise PrivacyViolation
+        subject_is_ancestor_of_sender? or raise NoMethodError, "undefined method `#{@method}' for #{@subject}"
       end
     end
 

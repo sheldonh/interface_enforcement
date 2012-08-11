@@ -10,14 +10,15 @@ module TestInterface
 
     def inject(subject)
       @subject = subject
-      @interface.ensure_valid_for_subject(subject)
       inject_enforcer_into_subject
       setup_delegators_on_subject
+      @subject
     end
 
     private
 
     def inject_enforcer_into_subject
+      @interface.ensure_valid_for_subject(@subject)
       enforcer = Enforcer.new(@interface, @subject, ALIAS_PREFIX)
       @subject.instance_variable_set(:@interface_enforcer, enforcer)
     end

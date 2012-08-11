@@ -67,6 +67,74 @@ describe TestInterface::Injector do
 
     end
 
+    context "protected methods" do
+
+      it "does not prevent legitimate access to the subject's protected methods" do
+        subject = Subject.new
+        interface(:protected_method => :allowed).inject(subject)
+        Descendant.new(subject).shared_secret.should == "a shared secret"
+      end
+
+      it "does not allow illegitimate access to the subject's protected methods" do
+        subject = Subject.new
+        interface(:protected_method => :allowed).proxy(subject)
+        expect { NonDescendant.new(subject).shared_secret }.to raise_error NoMethodError
+      end
+
+    end
+
+  end
+
+  describe "return values" do
+
+    it "are allowed if uncontracted" do
+      subject = Subject.new
+      interface(get: { :args => :any }).inject(subject)
+      subject.get.should eq("the default")
+    end
+
+    it "are allowed if unconstrained" do
+      subject = Subject.new
+      interface(get: { :returns => :any }).inject(subject)
+      subject.get.should eq("the default")
+    end
+
+  end
+
+  describe "arguments" do
+
+    it "are allowed if uncontracted" do
+      subject = Subject.new
+      interface(set: { :returns => Object }).inject(subject)
+      expect { subject.set("new knowledge") }.to_not raise_error
+    end
+
+    it "are allowed if unconstrained" do
+      subject = Subject.new
+      interface(set: { :args => :any }).proxy(subject)
+      expect { subject.set("new knowledge") }.to_not raise_error
+    end
+
+  end
+
+  describe "exceptions" do
+
+    class TestExampleError < Exception; end
+
+    let(:exploding_subject) do
+      Subject.new.tap { |o| o.stub(:get).and_raise TestExampleError }
+    end
+
+    it "are allowed if uncontracted" do
+      interface(get: {:args => :any}).inject(exploding_subject)
+      expect { exploding_subject.get }.to raise_error TestExampleError
+    end
+
+    it "are allowed if unconstrained" do
+      interface(get: {:exceptions => :any}).inject(exploding_subject)
+      expect { exploding_subject.get }.to raise_error TestExampleError
+    end
+
   end
 
 end
