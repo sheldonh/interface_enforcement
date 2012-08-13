@@ -30,9 +30,9 @@ class Subject
   end
 end
 
-describe TestInterface::Injector do
+describe InterfaceEnforcement::Injector do
 
-  include TestInterface::RspecSugar
+  include InterfaceEnforcement::RspecSugar
 
   describe "method invocation" do
 
@@ -43,10 +43,10 @@ describe TestInterface::Injector do
       subject.get.should eq("new knowledge")
     end
 
-    it "raises a TestInterface::MethodViolation if uncontracted" do
+    it "raises a InterfaceEnforcement::MethodViolation if uncontracted" do
       subject = Subject.new
       interface(:set => :allowed).inject(subject)
-      expect { subject.get }.to raise_error TestInterface::MethodViolation
+      expect { subject.get }.to raise_error InterfaceEnforcement::MethodViolation
     end
 
     context "nonexistent methods" do

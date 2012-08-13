@@ -1,6 +1,6 @@
-require 'test_interface'
+require 'interface_enforcement'
 
-module TestInterface
+module InterfaceEnforcement
   module RspecSugar
 
     class Enforcement
@@ -18,7 +18,7 @@ module TestInterface
     end
 
     def interface(contract)
-      interface = TestInterface::Interface.new(contract)
+      interface = InterfaceEnforcement::Interface.new(contract)
       Enforcement.new(interface)
     end
   end

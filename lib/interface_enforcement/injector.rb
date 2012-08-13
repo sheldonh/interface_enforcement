@@ -1,7 +1,7 @@
 require 'sender'
-require 'test_interface/aliased_enforcer'
+require 'interface_enforcement/aliased_enforcer'
 
-module TestInterface
+module InterfaceEnforcement
 
   class Injector
 

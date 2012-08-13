@@ -1,8 +1,8 @@
-require 'test_interface/injector'
-require 'test_interface/method_contract'
-require 'test_interface/proxy'
+require 'interface_enforcement/injector'
+require 'interface_enforcement/method_contract'
+require 'interface_enforcement/proxy'
 
-module TestInterface
+module InterfaceEnforcement
 
   class Interface
 
@@ -14,11 +14,11 @@ module TestInterface
     end
 
     def proxy(subject)
-      TestInterface::Proxy.new(self, subject)
+      InterfaceEnforcement::Proxy.new(self, subject)
     end
 
     def inject(subject)
-      TestInterface::Injector.new(self).inject(subject)
+      InterfaceEnforcement::Injector.new(self).inject(subject)
     end
 
     def method_contract(method)

@@ -1,4 +1,4 @@
-module TestInterface
+module InterfaceEnforcement
 
   module Constraint
 

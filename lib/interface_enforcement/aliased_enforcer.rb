@@ -1,7 +1,7 @@
-require 'test_interface/enforcer'
-require 'test_interface/violation'
+require 'interface_enforcement/enforcer'
+require 'interface_enforcement/violation'
 
-module TestInterface
+module InterfaceEnforcement
 
   class AliasedEnforcer < Enforcer
 

@@ -1,7 +1,7 @@
-require 'test_interface/access_control'
-require 'test_interface/violation'
+require 'interface_enforcement/access_control'
+require 'interface_enforcement/violation'
 
-module TestInterface
+module InterfaceEnforcement
 
   class Enforcer
 

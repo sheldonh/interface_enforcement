@@ -1,5 +1,5 @@
-interface\_enforcer
-===================
+interface\_enforcement
+=====================
 
 *WARNING* This software does not represent an opinion. It is not a call to
 do things a certain way. It is an exploration of the forces and concerns at
@@ -50,7 +50,7 @@ test (the test subject).
 Demo
 ----
 
-The file [demo/subscriber\_spec.rb](/sheldonh/interface_enforcer/tree/master/demo/subscriber_spec.rb)
+The file [demo/subscriber\_spec.rb](/sheldonh/interface_enforcement/tree/master/demo/subscriber_spec.rb)
 demonstrates the risk present in isolated testing in a loosely typed language,
 using a contrived example of an obvious mistake that nobody would make. What is
 being demonstrated is the mechanism of elective test interface enforcement, not
@@ -66,8 +66,8 @@ double that does not behave like the object it stands in for.
 
 The PublisherInterface would be written by the author of the Publisher, and
 would be used by the authors of both the Publisher and the subscriber. It is
-defined in terms of the TestInterface::Enforcer for readability, because the
-in situ use of TestInterface::Enforcer is more ugly.
+defined in terms of the InterfaceEnforcement::Enforcer for readability, because the
+in situ use of InterfaceEnforcement::Enforcer is more ugly.
 
 Background
 ----------

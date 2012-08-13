@@ -1,10 +1,10 @@
-require 'test_interface/constraint/enumeration'
-require 'test_interface/constraint/none'
-require 'test_interface/constraint/open'
-require 'test_interface/constraint/rule'
-require 'test_interface/constraint/type'
+require 'interface_enforcement/constraint/enumeration'
+require 'interface_enforcement/constraint/none'
+require 'interface_enforcement/constraint/open'
+require 'interface_enforcement/constraint/rule'
+require 'interface_enforcement/constraint/type'
 
-module TestInterface
+module InterfaceEnforcement
 
   module Constraint
 

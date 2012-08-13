@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe TestInterface::Proxy do
+describe InterfaceEnforcement::Proxy do
 
-  include TestInterface::RspecSugar
+  include InterfaceEnforcement::RspecSugar
 
   describe "method invocation" do
 
@@ -12,9 +12,9 @@ describe TestInterface::Proxy do
       proxy.get.should eq("new knowledge")
     end
 
-    it "raises a TestInterface::MethodViolation if uncontracted" do
+    it "raises a InterfaceEnforcement::MethodViolation if uncontracted" do
       proxy = interface(:set => :allowed).proxy(Subject.new)
-      expect { proxy.get }.to raise_error TestInterface::MethodViolation
+      expect { proxy.get }.to raise_error InterfaceEnforcement::MethodViolation
     end
 
     context "nonexistent methods" do
@@ -80,9 +80,9 @@ describe TestInterface::Proxy do
         proxy.get.should eq("the default")
       end
 
-      it "raises TestInterface::ReturnViolation if of uncontracted type" do
+      it "raises InterfaceEnforcement::ReturnViolation if of uncontracted type" do
         proxy = interface(get: { returns: Numeric }).proxy(Subject.new)
-        expect { proxy.get }.to raise_error(TestInterface::ReturnViolation)
+        expect { proxy.get }.to raise_error(InterfaceEnforcement::ReturnViolation)
       end
 
     end
@@ -94,9 +94,9 @@ describe TestInterface::Proxy do
         proxy.get.should eq("the default")
       end
 
-      it "raises TestInterface::ReturnViolation if it returns false for the return value" do
+      it "raises InterfaceEnforcement::ReturnViolation if it returns false for the return value" do
         proxy = interface(get: { returns: ->(o) { o.include?('impossible') } }).proxy(Subject.new)
-        expect { proxy.get }.to raise_error(TestInterface::ReturnViolation)
+        expect { proxy.get }.to raise_error(InterfaceEnforcement::ReturnViolation)
       end
 
     end
@@ -122,9 +122,9 @@ describe TestInterface::Proxy do
         expect { proxy.set("new knowledge") }.to_not raise_error
       end
 
-      it "raises a TestInterface::ArgumentViolation if uncontracted for one argument" do
+      it "raises a InterfaceEnforcement::ArgumentViolation if uncontracted for one argument" do
         proxy = interface(set: {args: Numeric}).proxy(Subject.new)
-        expect { proxy.set("new knowledge") }.to raise_error TestInterface::ArgumentViolation
+        expect { proxy.set("new knowledge") }.to raise_error InterfaceEnforcement::ArgumentViolation
       end
 
     end
@@ -136,28 +136,28 @@ describe TestInterface::Proxy do
         expect { proxy.ignore("correct", "types") }.to_not raise_error
       end
 
-      it "raise TestInterface::ArgumentViolation if not all contracted" do
+      it "raise InterfaceEnforcement::ArgumentViolation if not all contracted" do
         proxy = interface(ignore: {args: [:any, Numeric]}).proxy(Subject.new)
-        expect { proxy.ignore("wrong", "types") }.to raise_error TestInterface::ArgumentViolation
+        expect { proxy.ignore("wrong", "types") }.to raise_error InterfaceEnforcement::ArgumentViolation
       end
 
     end
 
     describe "count" do
 
-      it "raises TestInterface::ArgumentViolation if too numerous" do
+      it "raises InterfaceEnforcement::ArgumentViolation if too numerous" do
         proxy = interface(ignore: { args: Object }).proxy(Subject.new)
-        expect { proxy.ignore("too", "many arguments") }.to raise_error TestInterface::ArgumentViolation
+        expect { proxy.ignore("too", "many arguments") }.to raise_error InterfaceEnforcement::ArgumentViolation
       end
 
-      it "raises TestInterface::ArgumentViolation if too few" do
+      it "raises InterfaceEnforcement::ArgumentViolation if too few" do
         proxy = interface(ignore: { args: [ String, String ] }).proxy(Subject.new)
-        expect { proxy.ignore("too few arguments") }.to raise_error TestInterface::ArgumentViolation
+        expect { proxy.ignore("too few arguments") }.to raise_error InterfaceEnforcement::ArgumentViolation
       end
 
-      it "raises TestInterface::ArgumentViolation if prohibited" do
+      it "raises InterfaceEnforcement::ArgumentViolation if prohibited" do
         proxy = interface(get: { :args => :none }).proxy(Subject.new)
-        expect { proxy.get("new knowledge") }.to raise_error TestInterface::ArgumentViolation
+        expect { proxy.get("new knowledge") }.to raise_error InterfaceEnforcement::ArgumentViolation
       end
 
       it "is allowed to be zero when prohibited" do
@@ -177,8 +177,8 @@ describe TestInterface::Proxy do
         proxy.get.should == "new knowledge"
       end
 
-      it "raises TestInterface::ArgumentViolation it it returns false for them" do
-        expect { proxy.set("old knowledge") }.to raise_error TestInterface::ArgumentViolation
+      it "raises InterfaceEnforcement::ArgumentViolation it it returns false for them" do
+        expect { proxy.set("old knowledge") }.to raise_error InterfaceEnforcement::ArgumentViolation
       end
 
     end
@@ -208,14 +208,14 @@ describe TestInterface::Proxy do
       expect { proxy.get }.to raise_error TestExampleError
     end
 
-    it "raise TestInterface::ExceptionViolation if not of contracted type" do
+    it "raise InterfaceEnforcement::ExceptionViolation if not of contracted type" do
       proxy = interface(get: {exceptions: ArgumentError}).proxy(exploding_subject)
-      expect { proxy.get }.to raise_error TestInterface::ExceptionViolation
+      expect { proxy.get }.to raise_error InterfaceEnforcement::ExceptionViolation
     end
 
-    it "raises TestInterface::ExceptionViolation if prohibited" do
+    it "raises InterfaceEnforcement::ExceptionViolation if prohibited" do
       proxy = interface(get: {:exceptions => :none}).proxy(exploding_subject)
-      expect { proxy.get }.to raise_error TestInterface::ExceptionViolation
+      expect { proxy.get }.to raise_error InterfaceEnforcement::ExceptionViolation
     end
 
     describe "rule" do
@@ -226,10 +226,10 @@ describe TestInterface::Proxy do
         expect { proxy.get }.to raise_error TestExampleError
       end
 
-      it "raises TestInterface::ExceptionViolation it it returns false for the exception" do
+      it "raises InterfaceEnforcement::ExceptionViolation it it returns false for the exception" do
         rule = ->(e) { false }
         proxy = interface(get: {:exceptions => rule}).proxy(exploding_subject)
-        expect { proxy.get }.to raise_error TestInterface::ExceptionViolation
+        expect { proxy.get }.to raise_error InterfaceEnforcement::ExceptionViolation
       end
 
     end

@@ -1,6 +1,6 @@
-require 'test_interface/constraint'
+require 'interface_enforcement/constraint'
 
-module TestInterface
+module InterfaceEnforcement
 
   class MethodContract
 

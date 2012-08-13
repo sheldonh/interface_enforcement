@@ -1,7 +1,7 @@
 require 'sender'
-require 'test_interface/enforcer'
+require 'interface_enforcement/enforcer'
 
-module TestInterface
+module InterfaceEnforcement
 
   class Proxy
 

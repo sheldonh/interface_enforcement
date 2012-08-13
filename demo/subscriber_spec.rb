@@ -29,7 +29,7 @@ end
 ################
 
 require 'spec_helper'
-require 'test_interface'
+require 'interface_enforcement'
 
 module PublisherInterface
 
@@ -41,7 +41,7 @@ module PublisherInterface
   }
 
   def self.wrap(subject)
-    TestInterface::Interface.new(CONTRACT).proxy(subject)
+    InterfaceEnforcement::Interface.new(CONTRACT).proxy(subject)
   end
 
 end

@@ -1,4 +1,4 @@
-module TestInterface
+module InterfaceEnforcement
 
   class Violation < RuntimeError; end
   class MethodViolation < Violation; end
