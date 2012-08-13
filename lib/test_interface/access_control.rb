@@ -1,6 +1,6 @@
 module TestInterface
 
-  class MethodAccessControl
+  class AccessControl
 
     def initialize(subject, method_to_invoke)
       @subject = subject

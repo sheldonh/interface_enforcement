@@ -1,4 +1,4 @@
-require 'test_interface/method_access_control'
+require 'test_interface/access_control'
 require 'test_interface/violation'
 
 module TestInterface
@@ -20,7 +20,7 @@ module TestInterface
     private
 
     def constrain_access
-      control = MethodAccessControl.new(@subject, method_to_invoke)
+      control = AccessControl.new(@subject, method_to_invoke)
       control.allows?(@sender, @method) or raise NoMethodError, "undefined method `#{@method}' for #{@subject}"
     end
 
