@@ -4,10 +4,9 @@ module TestInterface
 
   class Enforcer
 
-    def initialize(interface, subject, method_invocation_prefix = nil)
+    def initialize(interface, subject)
       @interface = interface
       @subject = subject
-      @method_invocation_prefix = method_invocation_prefix
     end
 
     def enforce(method, args, sender)
@@ -46,7 +45,7 @@ module TestInterface
     end
 
     def method_to_invoke
-      :"#{@method_invocation_prefix}#{@method}"
+      @method
     end
 
     def constrain_exception(e)

@@ -1,3 +1,6 @@
+require 'sender'
+require 'test_interface/aliased_enforcer'
+
 module TestInterface
 
   class Injector
@@ -19,7 +22,7 @@ module TestInterface
 
     def inject_enforcer_into_subject
       @interface.ensure_valid_for_subject(@subject)
-      enforcer = Enforcer.new(@interface, @subject, ALIAS_PREFIX)
+      enforcer = AliasedEnforcer.new(@interface, @subject, ALIAS_PREFIX)
       @subject.instance_variable_set(:@interface_enforcer, enforcer)
     end
 
