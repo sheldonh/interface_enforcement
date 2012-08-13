@@ -1,3 +1,4 @@
+require 'test_interface/method_access_control'
 require 'test_interface/violation'
 
 module TestInterface
@@ -11,26 +12,16 @@ module TestInterface
 
     def enforce(method, args, sender)
       @method, @args, @sender = method, args, sender
-      constrain_protected_access
+      constrain_access
       constrain_args
       invoke_method.tap { constrain_return_value }
     end
 
     private
 
-    def constrain_protected_access
-      if protected_method?
-        subject_is_ancestor_of_sender? or raise NoMethodError, "undefined method `#{@method}' for #{@subject}"
-      end
-    end
-
-    def protected_method?
-      @subject.protected_methods.include?(@method)
-    end
-
-    def subject_is_ancestor_of_sender?
-      sender_ancestors = @sender.class.ancestors - @sender.class.included_modules
-      sender_ancestors.include? @subject.class
+    def constrain_access
+      control = MethodAccessControl.new(@subject, method_to_invoke)
+      control.allows?(@sender, @method) or raise NoMethodError, "undefined method `#{@method}' for #{@subject}"
     end
 
     def constrain_args

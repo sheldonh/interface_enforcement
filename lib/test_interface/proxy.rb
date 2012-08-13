@@ -8,7 +8,6 @@ module TestInterface
     def initialize(interface, subject)
       @interface = interface
       @subject = subject
-      @interface.ensure_valid_for_subject(subject)
       @enforcer = Enforcer.new(interface, subject)
     end
 

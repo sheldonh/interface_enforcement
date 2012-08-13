@@ -49,14 +49,28 @@ describe TestInterface::Injector do
       expect { subject.get }.to raise_error TestInterface::MethodViolation
     end
 
-    context "private methods" do
+    context "nonexistent methods" do
 
-      it "raises an ArgumentError if contracted against a private method" do
-        expect { interface(:private_method => :allowed).inject(Subject.new) }.to raise_error ArgumentError
+      it "raise a NoMethodError" do
+        subject = Subject.new
+        interface(:nonexistent => :allowed).inject(subject)
+        expect { subject.nonexistent }.to raise_error NoMethodError
       end
 
-      it "raises an ArgumentError if contracted against a nonexistent method" do
-        expect { interface(:nonexistent => :allowed).inject(Subject.new) }.to raise_error ArgumentError
+    end
+
+    context "private methods" do
+
+      it "raise a NoMethodError if contracted" do
+        subject = Subject.new
+        interface(:private_method => :allowed).inject(subject)
+        expect { subject.private_method }.to raise_error NoMethodError
+      end
+
+      it "raise a NoMethodError if uncontracted" do
+        subject = Subject.new
+        interface(:get => :allowed).inject(subject)
+        expect { subject.private_method }.to raise_error NoMethodError
       end
 
       it "does not prevent the subject's own access to its own private methods" do

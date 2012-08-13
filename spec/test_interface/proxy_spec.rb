@@ -17,17 +17,28 @@ describe TestInterface::Proxy do
       expect { proxy.get }.to raise_error TestInterface::MethodViolation
     end
 
+    context "nonexistent methods" do
+
+      it "raise a NoMethodError" do
+        proxy = interface({}).proxy(Subject.new)
+        expect { proxy.nonexistent }.to raise_error NoMethodError
+      end
+
+    end
+
     context "private methods" do
 
-      it "raises an ArgumentError if contracted against a private method" do
-        expect { interface(:private_method => :allowed).proxy(Subject.new) }.to raise_error ArgumentError
+      it "raise a NoMethodError if contracted" do
+        proxy = interface(:private_method => :allowed).proxy(Subject.new)
+        expect { proxy.private_method }.to raise_error NoMethodError
       end
 
-      it "raises an ArgumentError if contracted against a nonexistent method" do
-        expect { interface(:nonexistent => :allowed).proxy(Subject.new) }.to raise_error ArgumentError
+      it "raise a NoMethodError if uncontracted" do
+        proxy = interface(:get => :allowed).proxy(Subject.new)
+        expect { proxy.private_method }.to raise_error NoMethodError
       end
 
-      it "does not prevent the subject's own access to its own private methods" do
+      it "are allowed when called by the subject" do
         proxy = interface(:expose_secret => :allowed).proxy(Subject.new)
         proxy.expose_secret == "a secret"
       end

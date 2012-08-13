@@ -21,7 +21,6 @@ module TestInterface
     private
 
     def inject_enforcer_into_subject
-      @interface.ensure_valid_for_subject(@subject)
       enforcer = AliasedEnforcer.new(@interface, @subject, ALIAS_PREFIX)
       @subject.instance_variable_set(:@interface_enforcer, enforcer)
     end
