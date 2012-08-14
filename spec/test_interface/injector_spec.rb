@@ -75,8 +75,8 @@ describe InterfaceEnforcement::Injector do
 
       it "does not prevent the subject's own access to its own private methods" do
         subject = Subject.new
-        interface(:expose_secret => :allowed).inject(Subject.new)
-        subject.expose_secret == "a secret"
+        interface(:expose_secret => :allowed).inject(subject)
+        subject.expose_secret.should == "a secret"
       end
 
     end
