@@ -19,7 +19,7 @@ module InterfaceEnforcement
     end
 
     def private_method?
-      @subject.respond_to?(@method_to_invoke, :private) and !@subject.respond_to?(@method_to_invoke)
+      @subject.private_methods.include? @method_to_invoke
     end
 
     def protection_honoured?
