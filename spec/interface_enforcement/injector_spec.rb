@@ -1,35 +1,5 @@
 require 'spec_helper'
 
-class Subject
-  def get
-    @knowledge || "the default"
-  end
-
-  def set(something)
-    @knowledge = something
-  end
-
-  def ignore(*args)
-    args
-  end
-
-  def public_method
-    private_method
-  end
-
-  protected
-
-  def protected_method
-    "a shared secret"
-  end
-
-  private
-
-  def private_method
-    "a secret"
-  end
-end
-
 describe InterfaceEnforcement::Injector do
 
   include InterfaceEnforcement::RspecSugar
