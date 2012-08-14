@@ -10,7 +10,8 @@ describe InterfaceEnforcement::Constraint do
     end
 
     it "raises ArgumentError if all strategies gave up" do
-      expect { InterfaceEnforcement::Constraint.build(:rubbish, :any) }.to raise_error ArgumentError, /all strategies gave up/
+      expect { InterfaceEnforcement::Constraint.build(:rubbish, :any) }
+        .to raise_error ArgumentError, /all strategies gave up/
     end
 
   end
