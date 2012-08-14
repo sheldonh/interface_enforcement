@@ -12,16 +12,34 @@ module InterfaceEnforcement
 
     def enforce(method, args, sender)
       @method, @args, @sender = method, args, sender
-      constrain_access
-      constrain_args
-      invoke_method.tap { constrain_return_value }
+      constrain_preconditions
+      constrain_invocation
+      @return_value
     end
 
     private
 
-    def constrain_access
+    def constrain_preconditions
+      method_must_be_accessible
+      method_contract_must_exist
+    end
+
+    def method_contract_must_exist
+      method_contract or raise MethodViolation
+    end
+
+    def method_must_be_accessible
       control = AccessControl.new(@subject, method_to_invoke)
       control.allows?(@sender, @method) or raise NoMethodError, "undefined method `#{@method}' for #{@subject}"
+    end
+
+    def constrain_invocation
+      constrain_args
+      invoke_method
+      constrain_return_value
+    rescue Exception => e
+      constrain_exception(e)
+      raise
     end
 
     def constrain_args
@@ -30,9 +48,6 @@ module InterfaceEnforcement
 
     def invoke_method
       @return_value = @subject.send(method_to_invoke, *@args)
-    rescue Exception => e
-      constrain_exception(e)
-      raise
     end
 
     def method_to_invoke
@@ -48,7 +63,7 @@ module InterfaceEnforcement
     end
 
     def method_contract
-      @interface.method_contract(@method) or raise MethodViolation
+      @interface.method_contract(@method)
     end
 
   end
