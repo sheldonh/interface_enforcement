@@ -31,8 +31,11 @@ module InterfaceEnforcement
     end
 
     def subject_is_ancestor_of_sender?
-      sender_ancestors = @sender.class.ancestors - @sender.class.included_modules
       sender_ancestors.include? @subject.class
+    end
+
+    def sender_ancestors
+      @sender.class.ancestors - @sender.class.included_modules
     end
 
   end

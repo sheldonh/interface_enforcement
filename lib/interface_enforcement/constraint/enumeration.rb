@@ -9,16 +9,19 @@ module InterfaceEnforcement
       end
 
       def constrain(enum)
-        all_rules_apply?(enum)
+        @enum = enum
+        enumeration_size_correct? and all_rules_apply?
       end
 
       private
 
-      def all_rules_apply?(enum)
-        if @rules.size == enum.size
-          enum.each_with_index do |o, i|
-            return false unless @rules[i].constrain(o)
-          end
+      def enumeration_size_correct?
+        @rules.size == @enum.size
+      end
+
+      def all_rules_apply?
+        @enum.each_with_index do |o, i|
+          return false unless @rules[i].constrain(o)
         end
       end
 
