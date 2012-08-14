@@ -8,7 +8,7 @@ module InterfaceEnforcement
         @callable = callable
       end
 
-      def constrain(o)
+      def allows?(o)
         @callable.call(o)
       end
 

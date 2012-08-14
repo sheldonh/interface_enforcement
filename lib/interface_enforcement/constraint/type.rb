@@ -8,7 +8,7 @@ module InterfaceEnforcement
         @type = type
       end
 
-      def constrain(o)
+      def allows?(o)
         o.is_a?(@type)
       end
 

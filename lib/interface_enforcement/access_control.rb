@@ -19,6 +19,7 @@ module InterfaceEnforcement
     end
 
     def private_method?
+      #noinspection RubyResolve
       @subject.private_methods.include? @method_to_invoke
     end
 

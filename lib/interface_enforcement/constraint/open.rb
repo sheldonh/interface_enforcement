@@ -4,7 +4,8 @@ module InterfaceEnforcement
 
     class Open
 
-      def constrain(o)
+      #noinspection RubyUnusedLocalVariable
+      def allows?(*args)
         true
       end
 

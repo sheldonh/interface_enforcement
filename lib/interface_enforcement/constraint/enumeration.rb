@@ -8,7 +8,7 @@ module InterfaceEnforcement
         @rules = enumeration.map { |c| Constraint.build(c, :type, :any) }
       end
 
-      def constrain(enum)
+      def allows?(enum)
         @enum = enum
         enumeration_size_correct? and all_rules_apply?
       end
@@ -21,7 +21,7 @@ module InterfaceEnforcement
 
       def all_rules_apply?
         @enum.each_with_index do |o, i|
-          return false unless @rules[i].constrain(o)
+          return false unless @rules[i].allows?(o)
         end
       end
 

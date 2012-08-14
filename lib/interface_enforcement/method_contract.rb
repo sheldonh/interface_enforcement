@@ -13,16 +13,16 @@ module InterfaceEnforcement
       set_exception_constraint(specification[:exceptions])
     end
 
-    def constrain_args(args)
-      @args_constraint.constrain(args)
+    def allows_args?(args)
+      @args_constraint.allows?(args)
     end
 
-    def constrain_return_value(return_value)
-      @return_value_constraint.constrain(return_value)
+    def allows_return_value?(return_value)
+      @return_value_constraint.allows?(return_value)
     end
 
-    def constrain_exception(exception)
-      @exception_constraint.constrain(exception)
+    def allows_exception?(exception)
+      @exception_constraint.allows?(exception)
     end
 
     private

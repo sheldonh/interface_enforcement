@@ -4,7 +4,7 @@ module InterfaceEnforcement
 
     class None
 
-      def constrain(o)
+      def allows?(o)
         nothing_received?(o)
       end
 

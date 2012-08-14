@@ -33,6 +33,7 @@ module InterfaceEnforcement
     end
 
     def subject_methods
+      #noinspection RubyResolve
       (@subject.methods - @subject.private_methods) - Object.instance_methods
     end
 
@@ -43,6 +44,7 @@ module InterfaceEnforcement
 
     def redefine_subject_method(method)
       @subject.define_singleton_method method do |*args|
+        #noinspection RubyResolve
         @interface_enforcer.enforce(method, args, __sender__)
       end
     end

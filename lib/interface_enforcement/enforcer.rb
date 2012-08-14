@@ -25,7 +25,7 @@ module InterfaceEnforcement
     end
 
     def constrain_args
-      method_contract.constrain_args(@args) or raise ArgumentViolation
+      method_contract.allows_args?(@args) or raise ArgumentViolation
     end
 
     def invoke_method
@@ -40,11 +40,11 @@ module InterfaceEnforcement
     end
 
     def constrain_exception(e)
-      method_contract.constrain_exception(e) or raise ExceptionViolation
+      method_contract.allows_exception?(e) or raise ExceptionViolation
     end
 
     def constrain_return_value
-      method_contract.constrain_return_value(@return_value) or raise ReturnViolation
+      method_contract.allows_return_value?(@return_value) or raise ReturnViolation
     end
 
     def method_contract
