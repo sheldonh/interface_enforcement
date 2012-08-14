@@ -1,5 +1,11 @@
 require 'simplecov'
-SimpleCov.start 'rails'
+SimpleCov.start
+SimpleCov.at_exit do
+  File.open(File.join(SimpleCov.coverage_path, 'coverage_percent'), 'w') do |f|
+    f.write SimpleCov.result.covered_percent
+  end
+  SimpleCov.result.format!
+end
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 

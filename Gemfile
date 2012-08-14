@@ -10,4 +10,5 @@ group :development, :test do
   gem 'rake', '~> 0.9.2.2'
   gem 'rspec', '~> 2.11.0'
   gem 'simplecov', '~> 0.6.4'
+  gem 'cane', '~> 1.4.0'
 end
