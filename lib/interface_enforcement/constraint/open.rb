@@ -5,7 +5,7 @@ module InterfaceEnforcement
     class Open
 
       #noinspection RubyUnusedLocalVariable
-      def allows?(*args)
+      def allows?(o)
         true
       end
 

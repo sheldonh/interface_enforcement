@@ -41,7 +41,7 @@ module PublisherInterface
   }
 
   def self.wrap(subject)
-    InterfaceEnforcement::Interface.new(CONTRACT).proxy(subject)
+    InterfaceEnforcement::Interface.build(CONTRACT).proxy(subject)
   end
 
 end

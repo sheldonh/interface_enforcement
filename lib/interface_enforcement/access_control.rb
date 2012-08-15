@@ -1,42 +1,52 @@
 module InterfaceEnforcement
 
-  class AccessControl
+  module AccessControl
 
-    def initialize(subject, method_to_invoke)
-      @subject = subject
-      @method_to_invoke = method_to_invoke
-    end
-
-    def allows?(sender, method)
-      @sender, @method = sender, method
-      method_exists? and !private_method? and protection_honoured?
+    def self.subject_allows_sender?(subject, sender, method)
+      Relationship.new(sender, subject).allows?(method)
     end
 
     private
 
-    def method_exists?
-      @subject.methods.include? @method_to_invoke
-    end
+    class Relationship
 
-    def private_method?
-      #noinspection RubyResolve
-      @subject.private_methods.include? @method_to_invoke
-    end
+      def initialize(sender, subject)
+        @sender = sender
+        @subject = subject
+      end
 
-    def protection_honoured?
-      !protected_method? or subject_is_ancestor_of_sender?
-    end
+      def allows?(method)
+        @method = method
+        method_exists? and !private_method? and protection_honoured?
+      end
 
-    def protected_method?
-      @subject.protected_methods.include?(@method_to_invoke)
-    end
+      private
 
-    def subject_is_ancestor_of_sender?
-      sender_ancestors.include? @subject.class
-    end
+      def method_exists?
+        @subject.methods.include? @method
+      end
 
-    def sender_ancestors
-      @sender.class.ancestors - @sender.class.included_modules
+      def private_method?
+        #noinspection RubyResolve
+        @subject.private_methods.include? @method
+      end
+
+      def protection_honoured?
+        !protected_method? or subject_is_ancestor_of_sender?
+      end
+
+      def protected_method?
+        @subject.protected_methods.include?(@method)
+      end
+
+      def subject_is_ancestor_of_sender?
+        sender_ancestors.include? @subject.class
+      end
+
+      def sender_ancestors
+        @sender.class.ancestors - @sender.class.included_modules
+      end
+
     end
 
   end

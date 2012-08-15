@@ -5,8 +5,10 @@ module InterfaceEnforcement
 
   class AliasedEnforcer < Enforcer
 
-    def initialize(interface, subject, alias_prefix = nil)
+    # TODO This needs Josh Cheek's deject gem
+    def initialize(interface, subject, alias_prefix = nil, access_control = AccessControl)
       super(interface, subject)
+      @access_control = access_control
       @alias_prefix = alias_prefix
     end
 

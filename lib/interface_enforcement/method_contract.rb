@@ -4,14 +4,23 @@ module InterfaceEnforcement
 
   class MethodContract
 
-    UNCONSTRAINED_METHOD = {args: Constraint::UNCONSTRAINED_TYPE, returns: Constraint::UNCONSTRAINED_TYPE}
+    UNCONSTRAINED_METHOD = {:args => :any, :returns => :any, :exceptions => :any}
 
-    def initialize(specification)
+    # TODO convert current consumers to use #new instead (probably requiring course-grained constraint builders)
+    def self.build(specification, builder = Constraint)
       specification = UNCONSTRAINED_METHOD if specification == :allowed
-      set_args_constraint(specification[:args])
-      set_return_value_constraint(specification[:returns])
-      set_exception_constraint(specification[:exceptions])
+      new(builder.build_args_constraint(specification[:args]),
+          builder.build_exception_constraint(specification[:exceptions]),
+          builder.build_return_value_constraint(specification[:returns]))
     end
+
+    def initialize(args_constraint, exception_constraint, return_value_constraint)
+      @args_constraint = args_constraint
+      @return_value_constraint = return_value_constraint
+      @exception_constraint = exception_constraint
+    end
+
+    attr_reader :args_constraint, :return_value_constraint, :exception_constraint
 
     def allows_args?(args)
       @args_constraint.allows?(args)
@@ -23,20 +32,6 @@ module InterfaceEnforcement
 
     def allows_exception?(exception)
       @exception_constraint.allows?(exception)
-    end
-
-    private
-
-    def set_args_constraint(specification)
-      @args_constraint = Constraint.build(specification, :rule, :none, :enum, :enum_of_one, :any)
-    end
-
-    def set_return_value_constraint(specification)
-      @return_value_constraint = Constraint.build(specification, :rule, :type, :any)
-    end
-
-    def set_exception_constraint(specification)
-      @exception_constraint = Constraint.build(specification, :rule, :none, :type, :any)
     end
 
   end

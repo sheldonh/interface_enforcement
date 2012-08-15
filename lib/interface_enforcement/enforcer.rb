@@ -5,9 +5,10 @@ module InterfaceEnforcement
 
   class Enforcer
 
-    def initialize(interface, subject)
+    def initialize(interface, subject, access_control = AccessControl)
       @interface = interface
       @subject = subject
+      @access_control = access_control
     end
 
     def enforce(method, args, sender)
@@ -24,13 +25,14 @@ module InterfaceEnforcement
       method_contract_must_exist
     end
 
-    def method_contract_must_exist
-      method_contract or raise MethodViolation
+    def method_must_be_accessible
+      unless @access_control.subject_allows_sender?(@subject, @sender, method_to_invoke)
+        raise NoMethodError, "undefined method `#{@method}' for #{@subject}"
+      end
     end
 
-    def method_must_be_accessible
-      control = AccessControl.new(@subject, method_to_invoke)
-      control.allows?(@sender, @method) or raise NoMethodError, "undefined method `#{@method}' for #{@subject}"
+    def method_contract_must_exist
+      @interface.method_contracted?(@method) or raise MethodViolation
     end
 
     def constrain_invocation
@@ -43,7 +45,7 @@ module InterfaceEnforcement
     end
 
     def constrain_args
-      method_contract.allows_args?(@args) or raise ArgumentViolation
+      @interface.allows_args?(@method, @args) or raise ArgumentViolation
     end
 
     def invoke_method
@@ -54,16 +56,12 @@ module InterfaceEnforcement
       @method
     end
 
-    def constrain_exception(e)
-      method_contract.allows_exception?(e) or raise ExceptionViolation
-    end
-
     def constrain_return_value
-      method_contract.allows_return_value?(@return_value) or raise ReturnViolation
+      @interface.allows_return_value?(@method, @return_value) or raise ReturnViolation
     end
 
-    def method_contract
-      @interface.method_contract(@method)
+    def constrain_exception(e)
+      @interface.allows_exception?(@method, e) or raise ExceptionViolation
     end
 
   end

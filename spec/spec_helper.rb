@@ -1,3 +1,4 @@
+require 'pry'
 require 'simplecov'
 SimpleCov.start
 SimpleCov.at_exit do

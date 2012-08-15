@@ -8,36 +8,54 @@ module InterfaceEnforcement
 
   module Constraint
 
-    UNCONSTRAINED_TYPE = :any
+    ALL_TYPES = [:any, :enum, :enum_of_one, :none, :rule, :type]
+
+    # TODO use Josh Cheek's deject gem to make the Builder for clean testing, and maybe clean usage as well
+    def self.build_args_constraint(specification)
+      build(specification, :rule, :none, :enum, :enum_of_one, :any)
+    end
+
+    def self.build_return_value_constraint(specification)
+      build(specification, :rule, :type, :any)
+    end
+
+    def self.build_exception_constraint(specification)
+      build(specification, :rule, :none, :type, :any)
+    end
 
     def self.build(specification, *strategies)
-      Builder.new(specification, *strategies).build
+      Builder.new(*strategies).build(specification)
     end
 
     private
 
     class Builder
 
-      def initialize(specification, *strategies)
-        @specification = specification
+      def initialize(*strategies)
         @strategies = strategies
+        strategies_must_be_legal
       end
 
-      def build
+      def build(specification)
+        @specification = specification
         @strategies.detect { |strategy| @constraint = try_build(strategy) }
         @constraint or raise ArgumentError, "all strategies gave up on #{@specification.inspect}"
       end
 
       private
 
+      def strategies_must_be_legal
+        @strategies.each do |s|
+          ALL_TYPES.include?(s) or raise ArgumentError, "unknown constraint builder strategy #{s.inspect}"
+        end
+      end
+
       def try_build(strategy)
         send("build_#{strategy}")
-      rescue NoMethodError
-        raise ArgumentError, "unknown constraint builder strategy #{strategy.inspect}"
       end
 
       def build_any
-        Constraint::Open.new if @specification.nil? or @specification == UNCONSTRAINED_TYPE
+        Constraint::Open.new if @specification.nil? or @specification == :any
       end
 
       def build_enum

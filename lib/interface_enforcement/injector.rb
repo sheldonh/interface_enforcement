@@ -7,21 +7,27 @@ module InterfaceEnforcement
 
     ALIAS_PREFIX = 'interface_injected_'
 
-    def initialize(interface)
-      @interface = interface
+    # TODO deject
+    def self.inject(interface, subject, enforcer_type = AliasedEnforcer)
+      new(interface, enforcer_type).inject(subject)
     end
+
+    def initialize(interface, enforcer_type)
+      @interface = interface
+      @enforcer_type = enforcer_type
+    end
+    private :initialize
 
     def inject(subject)
       @subject = subject
       inject_enforcer_into_subject
       setup_delegators_on_subject
-      @subject
     end
 
     private
 
     def inject_enforcer_into_subject
-      enforcer = AliasedEnforcer.new(@interface, @subject, ALIAS_PREFIX)
+      enforcer = @enforcer_type.new(@interface, @subject, ALIAS_PREFIX)
       @subject.instance_variable_set(:@interface_enforcer, enforcer)
     end
 
