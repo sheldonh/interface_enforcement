@@ -29,7 +29,7 @@ module InterfaceEnforcement
       subject.send(:protected_method)
     end
 
-    it 'does not redefine private methods on the subject' do
+    it 'does not redefine private methods' do
       enforcer_type, enforcer = double, double
       enforcer_type.should_receive(:new).with(interface, subject, 'interface_injected_').and_return enforcer
       enforcer.should_not_receive(:enforce)
