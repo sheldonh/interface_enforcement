@@ -1,6 +1,8 @@
 require 'pry'
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start do
+  add_filter '/demo/'
+end
 SimpleCov.at_exit do
   File.open(File.join(SimpleCov.coverage_path, 'coverage_percent'), 'w') do |f|
     f.write SimpleCov.result.covered_percent

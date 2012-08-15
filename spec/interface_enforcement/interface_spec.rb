@@ -58,7 +58,7 @@ module InterfaceEnforcement
     it 'can use an injector to inject itself into a subject' do
       subject = Object.new
       interface = Interface.new(:get => allowed)
-      injector_type = double.tap { |o| o.should_receive(:inject).with(interface, subject).and_return subject }
+      injector_type = double.tap { |o| o.should_receive(:inject).with(interface, subject) }
       interface.inject(subject, injector_type).should == subject
     end
 

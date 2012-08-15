@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'archive-tar-minitar', '~> 0.5.2'
+gem 'deject', '~> 0.2.3'
 gem 'sender', '~> 1.5.9'
 
 group :development, :test do

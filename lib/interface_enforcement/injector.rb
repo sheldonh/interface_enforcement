@@ -1,3 +1,4 @@
+require 'deject'
 require 'sender'
 require 'interface_enforcement/aliased_enforcer'
 
@@ -7,28 +8,31 @@ module InterfaceEnforcement
 
     ALIAS_PREFIX = 'interface_injected_'
 
-    # TODO deject
-    def self.inject(interface, subject, enforcer_type = AliasedEnforcer)
-      new(interface, enforcer_type).inject(subject)
+    Deject self
+    dependency(:enforcer) do |injector|
+      injector.instance_exec { AliasedEnforcer.new(@interface, @subject, ALIAS_PREFIX) }
     end
 
-    def initialize(interface, enforcer_type)
+    # TODO this can go when Interface gets dejected
+    def self.inject(interface, subject)
+      new(interface, subject).inject
+    end
+
+    def initialize(interface, subject)
       @interface = interface
-      @enforcer_type = enforcer_type
+      @subject = subject
     end
     private :initialize
 
-    def inject(subject)
-      @subject = subject
-      inject_enforcer_into_subject
+    def inject
+      inject_self_into_subject
       setup_delegators_on_subject
     end
 
     private
 
-    def inject_enforcer_into_subject
-      enforcer = @enforcer_type.new(@interface, @subject, ALIAS_PREFIX)
-      @subject.instance_variable_set(:@interface_enforcer, enforcer)
+    def inject_self_into_subject
+      @subject.instance_variable_set(:@interface_injector, self)
     end
 
     def setup_delegators_on_subject
@@ -51,7 +55,7 @@ module InterfaceEnforcement
     def redefine_subject_method(method)
       @subject.define_singleton_method method do |*args|
         #noinspection RubyResolve
-        @interface_enforcer.enforce(method, args, __sender__)
+        @interface_injector.enforcer.enforce(method, args, __sender__)
       end
     end
 
