@@ -33,15 +33,15 @@ require 'interface_enforcement'
 
 module PublisherInterface
 
-  CONTRACT = {
+  INTERFACE = InterfaceEnforcement::Interface.build(
     :gets => {
       :args => ->(a) { a.empty? },
       :return => ->(o) { o.respond_to?(:to_s) and o.to_s.end_with?("\n") },
     }
-  }
+  )
 
   def self.wrap(subject)
-    InterfaceEnforcement::Interface.build(CONTRACT).proxy(subject)
+    INTERFACE.apply(subject)
   end
 
 end

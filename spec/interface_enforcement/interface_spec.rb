@@ -55,11 +55,17 @@ module InterfaceEnforcement
       interface.proxy(subject, proxy_type).should == :a_proxy
     end
 
-    it 'can use an injector to inject itself into a subject' do
+    # Yuk! rabbit holing?
+    # TODO Interface.apply(o) to proxy an object, but Interface.inject(c) to alias initialize on a class
+    # This would get rid of a dependency and provide symmetry
+    it 'can be applied to a subject by an applicator' do
       subject = Object.new
-      interface = Interface.new(:get => allowed)
-      injector_type = double.tap { |o| o.should_receive(:inject).with(interface, subject) }
-      interface.inject(subject, injector_type).should == subject
+      applicator, applicator_class = double, double
+      interface = Interface.new(:get => allowed).with_applicator(applicator_class)
+
+      applicator_class.should_receive(:for).with(interface).and_return applicator
+      applicator.should_receive(:apply).with(subject).and_return :injected_subject
+      interface.apply(subject).should == :injected_subject
     end
 
     describe '.build(specification)' do

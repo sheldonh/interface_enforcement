@@ -6,6 +6,12 @@ module InterfaceEnforcement
 
   class Interface
 
+    Deject self
+    dependency(:applicator) do
+      # TODO switch to Proxy as default once the hard part is proven
+      Injector
+    end
+
     # TODO deject
     def self.build(specification, method_contract_builder = MethodContract)
       method_contracts = build_method_contracts(specification, method_contract_builder)
@@ -16,13 +22,12 @@ module InterfaceEnforcement
       @contracts = contracts
     end
 
-    def proxy(subject, proxy_type = Proxy)
-      proxy_type.proxy(self, subject)
+    def apply(subject)
+      applicator.for(self).apply(subject)
     end
 
-    def inject(subject, injector_type = Injector)
-      injector_type.inject(self, subject)
-      subject
+    def proxy(subject, proxy_type = Proxy)
+      proxy_type.proxy(self, subject)
     end
 
     def method_contracted?(method)
